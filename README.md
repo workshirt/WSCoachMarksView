@@ -7,6 +7,7 @@ WSCoachMarksView is an iOS drop-in class that displays user coach marks with a r
 [![](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen1_small.png)](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen1.png)
 [![](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen2_small.png)](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen2.png)
 [![](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen3_small.png)](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen3.png)
+
 [![](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen4_small.png)](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen4.png)
 [![](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen5_small.png)](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen5.png)
 [![](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen6_small.png)](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen6.png)
