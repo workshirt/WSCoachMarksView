@@ -47,18 +47,38 @@ Create a new WSCoachMarksView instance in your viewDidLoad method and pass in an
 		@{@"rect": [NSValue valueWithCGRect:(CGRect){{10.0f,245.0f},{300.0f,56.0f}}], @"caption": @"Invite friends to get more photos"},
 		@{@"rect": [NSValue valueWithCGRect:(CGRect){{0.0f,410.0f},{320.0f,50.0f}}], @"caption": @"Keep your guests informed with your wedding details"}
 	];
-	WSCoachMarksView *coachView = [[WSCoachMarksView alloc] initWithFrame:self.view.bounds coachMarks:coachMarks];
-	[self.view addSubview:coachView];
-	[coachView start];
+	WSCoachMarksView *coachMarksView = [[WSCoachMarksView alloc] initWithFrame:self.view.bounds coachMarks:coachMarks];
+	[self.view addSubview:coachMarksView];
+	[coachMarksView start];
 }
 ```
 
 You can configure WSCoachMarksView before you present it using the `start` method. For example:
 
 ```objective-c
-coachView.animationDuration = 0.5f;
-coachView.enableContinueLabel = NO;
-[coachView start];
+coachMarksView.animationDuration = 0.5f;
+coachMarksView.enableContinueLabel = NO;
+[coachMarksView start];
+```
+
+Example of how to show the coach marks to your user only once (assumes `coachMarksView` is instantiated in `viewDidLoad`):
+
+```objective-c
+- (void)viewDidAppear:(BOOL)animated {
+	// Show coach marks
+	BOOL coachMarksShown = [[NSUserDefaults standardUserDefaults] boolForKey:@"WSCoachMarksShown"];
+	if (coachMarksShown == NO) {
+		// Don't show again
+		[[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"WSCoachMarksShown"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+
+		// Show coach marks
+		[coachMarksView start];
+
+		// Or show coach marks after a second delay
+		// [coachMarksView performSelector:@selector(start) withObject:nil afterDelay:1.0f];
+	}
+}
 ```
 
 ## Configuration
