@@ -98,7 +98,17 @@ static const BOOL kEnableContinueLabel = YES;
     self.hidden = YES;
 }
 
-#pragma mark - Mask animation
+#pragma mark - Cutout modify
+
+- (void)setCutoutToRect:(CGRect)rect {
+    // Define shape
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRect:self.bounds];
+    UIBezierPath *cutoutPath = [UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:self.cutoutRadius];
+    [maskPath appendPath:cutoutPath];
+    
+    // Set the new path
+    mask.path = maskPath.CGPath;
+}
 
 - (void)animateCutoutToRect:(CGRect)rect {
     // Define shape
@@ -180,8 +190,15 @@ static const BOOL kEnableContinueLabel = YES;
     [UIView animateWithDuration:0.3f animations:^{
         self.lblCaption.alpha = 1.0f;
     }];
+    
+    // If first mark, set the cutout to the center of first mark
+    if (markIndex == 0) {
+        CGPoint center = CGPointMake(floorf(markRect.origin.x + (markRect.size.width / 2.0f)), floorf(markRect.origin.y + (markRect.size.height / 2.0f)));
+        CGRect centerZero = (CGRect){center, CGSizeZero};
+        [self setCutoutToRect:centerZero];
+    }
 
-    // Animate the box
+    // Animate the cutout
     [self animateCutoutToRect:markRect];
 
     // Show continue lbl if first mark
