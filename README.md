@@ -2,15 +2,15 @@
 
 WSCoachMarksView is an iOS drop-in class that displays user coach marks with a rectangular cutout over an existing UI. This approach leverages your actual UI as part of the onboarding process for your user. Simply define an array of rectangles (CGRect) and their accompanying captions.
 
-[Demo video of WSCoachMarksView in action in HitchedPic app.](http://dl.dropbox.com/u/26188/CoachMarks/coachMarks.mov)
+[Demo video of WSCoachMarksView in action in HitchedPic app.](https://dl.dropboxusercontent.com/u/26188/CoachMarks/coachMarks.mov)
 
-[![](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen1_small.png)](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen1.png)
-[![](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen2_small.png)](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen2.png)
-[![](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen3_small.png)](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen3.png)
+[![](https://dl.dropboxusercontent.com/u/26188/CoachMarks/coachMarksScreen1_small.png)](https://dl.dropboxusercontent.com/u/26188/CoachMarks/coachMarksScreen1.png)
+[![](https://dl.dropboxusercontent.com/u/26188/CoachMarks/coachMarksScreen2_small.png)](https://dl.dropboxusercontent.com/u/26188/CoachMarks/coachMarksScreen2.png)
+[![](https://dl.dropboxusercontent.com/u/26188/CoachMarks/coachMarksScreen3_small.png)](https://dl.dropboxusercontent.com/u/26188/CoachMarks/coachMarksScreen3.png)
 
-[![](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen4_small.png)](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen4.png)
-[![](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen5_small.png)](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen5.png)
-[![](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen6_small.png)](http://dl.dropbox.com/u/26188/CoachMarks/coachMarksScreen6.png)
+[![](https://dl.dropboxusercontent.com/u/26188/CoachMarks/coachMarksScreen4_small.png)](https://dl.dropboxusercontent.com/u/26188/CoachMarks/coachMarksScreen4.png)
+[![](https://dl.dropboxusercontent.com/u/26188/CoachMarks/coachMarksScreen5_small.png)](https://dl.dropboxusercontent.com/u/26188/CoachMarks/coachMarksScreen5.png)
+[![](https://dl.dropboxusercontent.com/u/26188/CoachMarks/coachMarksScreen6_small.png)](https://dl.dropboxusercontent.com/u/26188/CoachMarks/coachMarksScreen6.png)
 
 ## Requirements
 
