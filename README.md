@@ -22,7 +22,17 @@ WSCoachMarksView works on any iOS version and is built with ARC. It depends on t
 
 ## Adding WSCoachMarksView to your project
 
-Simply add the `WSCoachMarksView.h` and `WSCoachMarksView.m` source files to your project.
+### Cocoapods
+
+[CocoaPods](http://cocoapods.org) is the recommended way to add WSCoachMarksView to your project.
+
+1. Add a pod entry for WSCoachMarksView to your Podfile `pod 'WSCoachMarksView', '~> 0.2'`
+2. Install the pod(s) by running `pod install`.
+3. Include WSCoachMarksView wherever you need it with `#import "WSCoachMarksView.h"`.
+
+### Source files
+
+Alternatively, you can directly add the `WSCoachMarksView.h` and `WSCoachMarksView.m` source files to your project.
 
 1. Download the [latest code version](https://github.com/workshirt/WSCoachMarksView/archive/master.zip) or add the repository as a git submodule to your git-tracked project.
 2. Open your project in Xcode, than drag and drop `WSCoachMarksView.h` and `WSCoachMarksView.m` onto your project (use the "Product Navigator view"). Make sure to select Copy items when asked if you extracted the code archive outside of your project.
@@ -40,17 +50,43 @@ Create a new WSCoachMarksView instance in your viewDidLoad method and pass in an
 
 	// Setup coach marks
 	NSArray *coachMarks = @[
-		@{@"rect": [NSValue valueWithCGRect:(CGRect){{0,0},{45,45}}], @"caption": @"Helpful navigation menu"},
-		@{@"rect": [NSValue valueWithCGRect:(CGRect){{10.0f,56.0f},{300.0f,56.0f}}], @"caption": @"Document your wedding by taking photos"},
-		@{@"rect": [NSValue valueWithCGRect:(CGRect){{10.0f,119.0f},{300.0f,56.0f}}], @"caption": @"Your wedding photo album"},
-		@{@"rect": [NSValue valueWithCGRect:(CGRect){{10.0f,182.0f},{300.0f,56.0f}}], @"caption": @"View and manage your friends & family"},
-		@{@"rect": [NSValue valueWithCGRect:(CGRect){{10.0f,245.0f},{300.0f,56.0f}}], @"caption": @"Invite friends to get more photos"},
-		@{@"rect": [NSValue valueWithCGRect:(CGRect){{0.0f,410.0f},{320.0f,50.0f}}], @"caption": @"Keep your guests informed with your wedding details"}
+		@{
+			@"rect": [NSValue valueWithCGRect:(CGRect){{0,0},{45,45}}],
+			@"caption": @"Helpful navigation menu"
+		},
+		@{
+			@"rect": [NSValue valueWithCGRect:(CGRect){{10.0f,56.0f},{300.0f,56.0f}}],
+			@"caption": @"Document your wedding by taking photos"
+		},
+		@{
+			@"rect": [NSValue valueWithCGRect:(CGRect){{10.0f,119.0f},{300.0f,56.0f}}],
+			@"caption": @"Your wedding photo album"
+		},
+		@{
+			@"rect": [NSValue valueWithCGRect:(CGRect){{10.0f,182.0f},{300.0f,56.0f}}],
+			@"caption": @"View and manage your friends & family"
+		},
+		@{
+			@"rect": [NSValue valueWithCGRect:(CGRect){{10.0f,245.0f},{300.0f,56.0f}}],
+			@"caption": @"Invite friends to get more photos"
+		},
+		@{
+			@"rect": [NSValue valueWithCGRect:(CGRect){{0.0f,410.0f},{320.0f,50.0f}}],
+			@"caption": @"Keep your guests informed with your wedding details"
+		}
 	];
 	WSCoachMarksView *coachMarksView = [[WSCoachMarksView alloc] initWithFrame:self.view.bounds coachMarks:coachMarks];
 	[self.view addSubview:coachMarksView];
 	[coachMarksView start];
 }
+```
+
+Remember to add the coach marks view to the top-most controller. So in you have a navigation controller, use:
+
+```objective-c
+WSCoachMarksView *coachMarksView = [[WSCoachMarksView alloc] initWithFrame:self.navigationController.view.bounds coachMarks:coachMarks];
+[self.navigationController.view addSubview:coachMarksView];
+[coachMarksView start];
 ```
 
 You can configure WSCoachMarksView before you present it using the `start` method. For example:
@@ -115,11 +151,36 @@ Define how far the captions label appears above or below the cutout (default: 35
 
 'Tap to continue' label pops up by default to guide the user at the first coach mark (default: YES).
 
+## WSCoachMarksViewDelegate
+
+If you'd like to take a certain action when a specific coach mark comes into view, your view controller can implement the WSCoachMarksViewDelegate.
+
+### 1. Conform your view controller to the WSCoachMarksViewDelegate protocol:
+
+`@interface WSMainViewController : UIViewController <WSCoachMarksViewDelegate>`
+
+### 2. Assign the delegate to your coach marks view instance:
+
+`coachMarksView.delegate = self;`
+
+### 3. Implement the delegate protocol methods:
+
+*Note: All of the methods are optional. Implement only those that are needed.*
+
+- `- (void)coachMarksView:(WSCoachMarksView*)coachMarksView willNavigateToIndex:(NSInteger)index`
+- `- (void)coachMarksView:(WSCoachMarksView*)coachMarksView didNavigateToIndex:(NSInteger)index`
+- `- (void)coachMarksViewWillCleanup:(WSCoachMarksView*)coachMarksView`
+- `- (void)coachMarksViewDidCleanup:(WSCoachMarksView*)coachMarksView`
+
 ## License
 
 This code is distributed under the terms and conditions of the [MIT license](LICENSE).
 
 ## Change-log
+
+**Version 0.2** @ 4/13/13
+
+- Added WSCoachMarksViewDelegate protocol.
 
 **Version 0.1** @ 4/1/13
 

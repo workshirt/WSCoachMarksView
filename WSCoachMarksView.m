@@ -1,6 +1,6 @@
 //
 //  WSCoachMarksView.m
-//  Version 0.1
+//  Version 0.2
 //
 //  Created by Dimitry Bentsionov on 4/1/13.
 //  Copyright (c) 2013 Workshirt, Inc. All rights reserved.
@@ -23,6 +23,7 @@ static const BOOL kEnableContinueLabel = YES;
 
 #pragma mark - Properties
 
+@synthesize delegate;
 @synthesize coachMarks;
 @synthesize lblCaption;
 @synthesize maskColor = _maskColor;
@@ -65,7 +66,7 @@ static const BOOL kEnableContinueLabel = YES;
 }
 
 - (void)setup {
-    // Detaulf
+    // Default
     self.animationDuration = kAnimationDuration;
     self.cutoutRadius = kCutoutRadius;
     self.maxLblWidth = kMaxLblWidth;
@@ -77,7 +78,6 @@ static const BOOL kEnableContinueLabel = YES;
     [mask setFillRule:kCAFillRuleEvenOdd];
     [mask setFillColor:[[UIColor colorWithHue:0.0f saturation:0.0f brightness:0.0f alpha:0.9f] CGColor]];
     [self.layer addSublayer:mask];
-    [self animateCutoutToRect:CGRectZero];
 
     // Capture touches
     UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(userDidTap:)];
@@ -105,7 +105,7 @@ static const BOOL kEnableContinueLabel = YES;
     UIBezierPath *maskPath = [UIBezierPath bezierPathWithRect:self.bounds];
     UIBezierPath *cutoutPath = [UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:self.cutoutRadius];
     [maskPath appendPath:cutoutPath];
-    
+
     // Set the new path
     mask.path = maskPath.CGPath;
 }
@@ -118,6 +118,7 @@ static const BOOL kEnableContinueLabel = YES;
 
     // Animate it
     CABasicAnimation *anim = [CABasicAnimation animationWithKeyPath:@"path"];
+    anim.delegate = self;
     anim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
     anim.duration = self.animationDuration;
     anim.removedOnCompletion = NO;
@@ -173,6 +174,11 @@ static const BOOL kEnableContinueLabel = YES;
     NSString *markCaption = [markDef objectForKey:@"caption"];
     CGRect markRect = [[markDef objectForKey:@"rect"] CGRectValue];
 
+    // Delegate (coachMarksView:willNavigateTo:atIndex:)
+    if ([self.delegate respondsToSelector:@selector(coachMarksView:willNavigateToIndex:)]) {
+        [self.delegate coachMarksView:self willNavigateToIndex:markIndex];
+    }
+
     // Calculate the caption position and size
     self.lblCaption.alpha = 0.0f;
     self.lblCaption.frame = (CGRect){{0.0f, 0.0f}, {self.maxLblWidth, 0.0f}};
@@ -190,7 +196,7 @@ static const BOOL kEnableContinueLabel = YES;
     [UIView animateWithDuration:0.3f animations:^{
         self.lblCaption.alpha = 1.0f;
     }];
-    
+
     // If first mark, set the cutout to the center of first mark
     if (markIndex == 0) {
         CGPoint center = CGPointMake(floorf(markRect.origin.x + (markRect.size.width / 2.0f)), floorf(markRect.origin.y + (markRect.size.height / 2.0f)));
@@ -221,7 +227,14 @@ static const BOOL kEnableContinueLabel = YES;
     }
 }
 
+#pragma mark - Cleanup
+
 - (void)cleanup {
+    // Delegate (coachMarksViewWillCleanup:)
+    if ([self.delegate respondsToSelector:@selector(coachMarksViewWillCleanup:)]) {
+        [self.delegate coachMarksViewWillCleanup:self];
+    }
+
     // Fade out self
     [UIView animateWithDuration:self.animationDuration
                      animations:^{
@@ -230,7 +243,21 @@ static const BOOL kEnableContinueLabel = YES;
                      completion:^(BOOL finished) {
                          // Remove self
                          [self removeFromSuperview];
+
+                         // Delegate (coachMarksViewDidCleanup:)
+                         if ([self.delegate respondsToSelector:@selector(coachMarksViewDidCleanup:)]) {
+                             [self.delegate coachMarksViewDidCleanup:self];
+                         }
                      }];
+}
+
+#pragma mark - Animation delegate
+
+- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag {
+    // Delegate (coachMarksView:didNavigateTo:atIndex:)
+    if ([self.delegate respondsToSelector:@selector(coachMarksView:didNavigateToIndex:)]) {
+        [self.delegate coachMarksView:self didNavigateToIndex:markIndex];
+    }
 }
 
 @end

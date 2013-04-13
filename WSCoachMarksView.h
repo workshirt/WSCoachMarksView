@@ -1,6 +1,6 @@
 //
 //  WSCoachMarksView.h
-//  Version 0.1
+//  Version 0.2
 //
 //  Created by Dimitry Bentsionov on 4/1/13.
 //  Copyright (c) 2013 Workshirt, Inc. All rights reserved.
@@ -28,9 +28,12 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol WSCoachMarksViewDelegate;
+
 @interface WSCoachMarksView : UIView {
 }
 
+@property (nonatomic, weak) id<WSCoachMarksViewDelegate> delegate;
 @property (nonatomic, retain) NSArray *coachMarks;
 @property (nonatomic, retain) UILabel *lblCaption;
 @property (nonatomic, retain) UIColor *maskColor;
@@ -42,5 +45,15 @@
 
 - (id)initWithFrame:(CGRect)frame coachMarks:(NSArray *)marks;
 - (void)start;
+
+@end
+
+@protocol WSCoachMarksViewDelegate <NSObject>
+
+@optional
+- (void)coachMarksView:(WSCoachMarksView*)coachMarksView willNavigateToIndex:(NSInteger)index;
+- (void)coachMarksView:(WSCoachMarksView*)coachMarksView didNavigateToIndex:(NSInteger)index;
+- (void)coachMarksViewWillCleanup:(WSCoachMarksView*)coachMarksView;
+- (void)coachMarksViewDidCleanup:(WSCoachMarksView*)coachMarksView;
 
 @end
