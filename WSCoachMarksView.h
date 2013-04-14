@@ -28,12 +28,21 @@
 
 #import <UIKit/UIKit.h>
 
+#ifndef WS_WEAK
+  #if __has_feature(objc_arc_weak)
+    #define WS_WEAK weak
+  #elif __has_feature(objc_arc)
+    #define WS_WEAK unsafe_unretained
+  #else
+    #define WS_WEAK assign
+  #endif
+#endif
+
 @protocol WSCoachMarksViewDelegate;
 
-@interface WSCoachMarksView : UIView {
-}
+@interface WSCoachMarksView : UIView
 
-@property (nonatomic, weak) id<WSCoachMarksViewDelegate> delegate;
+@property (nonatomic, WS_WEAK) id<WSCoachMarksViewDelegate> delegate;
 @property (nonatomic, retain) NSArray *coachMarks;
 @property (nonatomic, retain) UILabel *lblCaption;
 @property (nonatomic, retain) UIColor *maskColor;
