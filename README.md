@@ -116,6 +116,31 @@ Example of how to show the coach marks to your user only once (assumes `coachMar
 	}
 }
 ```
+Example of changing coach marks for different layouts in different interface orientations(assumes `coachMarksView` is a property of current view controller, and we want to add coach mark in this view controller's view): 
+
+```objective-c
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+  [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+  
+  // Do something to decide the newCoachMarks NSArray for this toInterfaceOrientation
+  // ...
+  
+  // Hide coach mark and set coach marks to newCoachMarks
+  [self.coachMarksView willRotateTo:toInterfaceOrientation toCoachMarks:newCoachMarks];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{	
+	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+	
+	// ...
+	
+	// Calculate and display new coach mark for current mark index
+	[self.coachMarksView didRotateFrom:fromInterfaceOrientation containerView:self.view];
+  
+}
+```
 
 ## Configuration
 
