@@ -98,6 +98,24 @@ static const BOOL kEnableContinueLabel = YES;
     self.hidden = YES;
 }
 
+#pragma mark - Rotation
+
+- (void)willRotateTo:(UIInterfaceOrientation)toInterfaceOrientation toCoachMarks:(NSArray *)toCoachMarks {
+    self.hidden = YES;
+    self.coachMarks = toCoachMarks;
+}
+
+- (void)didRotateFrom:(UIInterfaceOrientation)fromInterfaceOrientation containerView:(UIView *)containerView {
+    self.frame = containerView.bounds;
+    NSDictionary *markDef = [self.coachMarks objectAtIndex:markIndex];
+    NSString *markCaption = [markDef objectForKey:@"caption"];
+    CGRect markRect = [[markDef objectForKey:@"rect"] CGRectValue];
+    [self setCutoutToRect:markRect];
+    self.hidden = NO;
+    [self goToCoachMarkIndexed:markIndex];
+}
+
+
 #pragma mark - Cutout modify
 
 - (void)setCutoutToRect:(CGRect)rect {

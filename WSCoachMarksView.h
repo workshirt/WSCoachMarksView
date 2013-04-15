@@ -55,6 +55,22 @@
 - (id)initWithFrame:(CGRect)frame coachMarks:(NSArray *)marks;
 - (void)start;
 
+/* 
+ Call this method in containerViewController's
+ - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration;
+ and provide the new coachmarks for the new layout in the new
+ interface orientation.
+ */
+- (void)willRotateTo:(UIInterfaceOrientation)toInterfaceOrientation toCoachMarks:(NSArray *)toCoachMarks;
+
+/*
+ Call this method in containerViewController's
+ - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation;
+ to recalculate and display the new coachmark.
+ */
+- (void)didRotateFrom:(UIInterfaceOrientation)fromInterfaceOrientation containerView:(UIView *)containerView;
+
+
 @end
 
 @protocol WSCoachMarksViewDelegate <NSObject>
