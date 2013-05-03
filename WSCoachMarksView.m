@@ -159,7 +159,7 @@ static const BOOL kEnableContinueLabel = YES;
                      }];
 }
 
-- (void)goToCoachMarkIndexed:(NSInteger)index {
+- (void)goToCoachMarkIndexed:(NSUInteger)index {
     // Out of bounds
     if (index >= self.coachMarks.count) {
         [self cleanup];
