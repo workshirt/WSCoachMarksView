@@ -167,8 +167,8 @@ If you'd like to take a certain action when a specific coach mark comes into vie
 
 *Note: All of the methods are optional. Implement only those that are needed.*
 
-- `- (void)coachMarksView:(WSCoachMarksView*)coachMarksView willNavigateToIndex:(NSInteger)index`
-- `- (void)coachMarksView:(WSCoachMarksView*)coachMarksView didNavigateToIndex:(NSInteger)index`
+- `- (void)coachMarksView:(WSCoachMarksView*)coachMarksView willNavigateToIndex:(NSUInteger)index`
+- `- (void)coachMarksView:(WSCoachMarksView*)coachMarksView didNavigateToIndex:(NSUInteger)index`
 - `- (void)coachMarksViewWillCleanup:(WSCoachMarksView*)coachMarksView`
 - `- (void)coachMarksViewDidCleanup:(WSCoachMarksView*)coachMarksView`
 
