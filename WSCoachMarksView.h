@@ -60,8 +60,8 @@
 @protocol WSCoachMarksViewDelegate <NSObject>
 
 @optional
-- (void)coachMarksView:(WSCoachMarksView*)coachMarksView willNavigateToIndex:(NSInteger)index;
-- (void)coachMarksView:(WSCoachMarksView*)coachMarksView didNavigateToIndex:(NSInteger)index;
+- (void)coachMarksView:(WSCoachMarksView*)coachMarksView willNavigateToIndex:(NSUInteger)index;
+- (void)coachMarksView:(WSCoachMarksView*)coachMarksView didNavigateToIndex:(NSUInteger)index;
 - (void)coachMarksViewWillCleanup:(WSCoachMarksView*)coachMarksView;
 - (void)coachMarksViewDidCleanup:(WSCoachMarksView*)coachMarksView;
 
