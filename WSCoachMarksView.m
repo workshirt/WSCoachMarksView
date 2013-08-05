@@ -4,6 +4,7 @@
 //
 //  Created by Dimitry Bentsionov on 4/1/13.
 //  Copyright (c) 2013 Workshirt, Inc. All rights reserved.
+//  Modified by Roman Barzyczak on 5/8/13.
 //
 
 #import <QuartzCore/QuartzCore.h>
@@ -13,6 +14,7 @@ static const CGFloat kAnimationDuration = 0.3f;
 static const CGFloat kCutoutRadius = 2.0f;
 static const CGFloat kMaxLblWidth = 230.0f;
 static const CGFloat kLblSpacing = 35.0f;
+static const CGFloat kLabelMargin = 5.0f;
 static const BOOL kEnableContinueLabel = YES;
 
 @implementation WSCoachMarksView {
@@ -76,7 +78,7 @@ static const BOOL kEnableContinueLabel = YES;
     // Shape layer mask
     mask = [CAShapeLayer layer];
     [mask setFillRule:kCAFillRuleEvenOdd];
-    [mask setFillColor:[[UIColor colorWithHue:0.0f saturation:0.0f brightness:0.0f alpha:0.9f] CGColor]];
+    [mask setFillColor:[[UIColor colorWithHue:0.0f saturation:0.0f brightness:0.0f alpha:0.5f] CGColor]];
     [self.layer addSublayer:mask];
 
     // Capture touches
@@ -159,7 +161,7 @@ static const BOOL kEnableContinueLabel = YES;
                      }];
 }
 
-- (void)goToCoachMarkIndexed:(NSUInteger)index {
+- (void)goToCoachMarkIndexed:(NSInteger)index {
     // Out of bounds
     if (index >= self.coachMarks.count) {
         [self cleanup];
@@ -173,7 +175,7 @@ static const BOOL kEnableContinueLabel = YES;
     NSDictionary *markDef = [self.coachMarks objectAtIndex:index];
     NSString *markCaption = [markDef objectForKey:@"caption"];
     CGRect markRect = [[markDef objectForKey:@"rect"] CGRectValue];
-
+    WS_LABEL_POSITON labelPosition = [[markDef objectForKey:@"position"] integerValue];
     // Delegate (coachMarksView:willNavigateTo:atIndex:)
     if ([self.delegate respondsToSelector:@selector(coachMarksView:willNavigateToIndex:)]) {
         [self.delegate coachMarksView:self willNavigateToIndex:markIndex];
@@ -189,7 +191,16 @@ static const BOOL kEnableContinueLabel = YES;
     if (bottomY > self.bounds.size.height) {
         y = markRect.origin.y - self.lblSpacing - self.lblCaption.frame.size.height;
     }
-    CGFloat x = floorf((self.bounds.size.width - self.lblCaption.frame.size.width) / 2.0f);
+    CGFloat x;
+    if(labelPosition == WS_LABEL_POSITON_CENTER) {
+        x =floorf((self.bounds.size.width - self.lblCaption.frame.size.width) / 2.0f);
+    } else if(labelPosition == WS_LABEL_POSITON_RIGHT) {
+        CGRect screenRect = [[UIScreen mainScreen] bounds];
+        CGFloat screenWidth = screenRect.size.width;
+        x = screenWidth - self.lblCaption.frame.size.width - kLabelMargin;
+    } else {
+        x = kLabelMargin;
+    }
 
     // Animate the caption label
     self.lblCaption.frame = (CGRect){{x, y}, self.lblCaption.frame.size};

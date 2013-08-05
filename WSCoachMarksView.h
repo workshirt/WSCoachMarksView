@@ -1,10 +1,11 @@
 //
 //  WSCoachMarksView.h
-//  Version 0.2
+//  Version 0.21
 //
 //  Created by Dimitry Bentsionov on 4/1/13.
 //  Copyright (c) 2013 Workshirt, Inc. All rights reserved.
 //
+//  Modified by Roman Barzyczak on 5/8/13.
 
 // This code is distributed under the terms and conditions of the MIT license.
 //
@@ -38,6 +39,12 @@
   #endif
 #endif
 
+typedef enum {
+    WS_LABEL_POSITON_CENTER,
+    WS_LABEL_POSITON_LEFT,
+    WS_LABEL_POSITON_RIGHT,
+} WS_LABEL_POSITON;
+
 @protocol WSCoachMarksViewDelegate;
 
 @interface WSCoachMarksView : UIView
@@ -60,8 +67,8 @@
 @protocol WSCoachMarksViewDelegate <NSObject>
 
 @optional
-- (void)coachMarksView:(WSCoachMarksView*)coachMarksView willNavigateToIndex:(NSUInteger)index;
-- (void)coachMarksView:(WSCoachMarksView*)coachMarksView didNavigateToIndex:(NSUInteger)index;
+- (void)coachMarksView:(WSCoachMarksView*)coachMarksView willNavigateToIndex:(NSInteger)index;
+- (void)coachMarksView:(WSCoachMarksView*)coachMarksView didNavigateToIndex:(NSInteger)index;
 - (void)coachMarksViewWillCleanup:(WSCoachMarksView*)coachMarksView;
 - (void)coachMarksViewDidCleanup:(WSCoachMarksView*)coachMarksView;
 
