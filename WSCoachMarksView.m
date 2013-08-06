@@ -4,7 +4,6 @@
 //
 //  Created by Dimitry Bentsionov on 4/1/13.
 //  Copyright (c) 2013 Workshirt, Inc. All rights reserved.
-//  Modified by Roman Barzyczak on 5/8/13.
 //
 
 #import <QuartzCore/QuartzCore.h>
@@ -15,6 +14,7 @@ static const CGFloat kCutoutRadius = 2.0f;
 static const CGFloat kMaxLblWidth = 230.0f;
 static const CGFloat kLblSpacing = 35.0f;
 static const CGFloat kLabelMargin = 5.0f;
+static const CGFloat kMaskAlpha = 0.7f;
 static const BOOL kEnableContinueLabel = YES;
 
 @implementation WSCoachMarksView {
@@ -78,7 +78,7 @@ static const BOOL kEnableContinueLabel = YES;
     // Shape layer mask
     mask = [CAShapeLayer layer];
     [mask setFillRule:kCAFillRuleEvenOdd];
-    [mask setFillColor:[[UIColor colorWithHue:0.0f saturation:0.0f brightness:0.0f alpha:0.5f] CGColor]];
+    [mask setFillColor:[[UIColor colorWithHue:0.0f saturation:0.0f brightness:0.0f alpha:kMaskAlpha] CGColor]];
     [self.layer addSublayer:mask];
 
     // Capture touches
@@ -90,6 +90,7 @@ static const BOOL kEnableContinueLabel = YES;
     self.lblCaption.backgroundColor = [UIColor clearColor];
     self.lblCaption.textColor = [UIColor whiteColor];
     self.lblCaption.font = [UIFont systemFontOfSize:20.0f];
+    self.lblCaption.font = [UIFont fontWithName:@"Noteworthy-Light" size:20.0f];
     self.lblCaption.lineBreakMode = NSLineBreakByWordWrapping;
     self.lblCaption.numberOfLines = 0;
     self.lblCaption.textAlignment = NSTextAlignmentCenter;
@@ -162,6 +163,7 @@ static const BOOL kEnableContinueLabel = YES;
 }
 
 - (void)goToCoachMarkIndexed:(NSInteger)index {
+
     // Out of bounds
     if (index >= self.coachMarks.count) {
         [self cleanup];
@@ -175,7 +177,19 @@ static const BOOL kEnableContinueLabel = YES;
     NSDictionary *markDef = [self.coachMarks objectAtIndex:index];
     NSString *markCaption = [markDef objectForKey:@"caption"];
     CGRect markRect = [[markDef objectForKey:@"rect"] CGRectValue];
-    WS_LABEL_POSITON labelPosition = [[markDef objectForKey:@"position"] integerValue];
+    WS_LABEL_ALIGNMENT labelAlignment = [[markDef objectForKey:@"alignment"] integerValue];
+    WS_LABEL_POSITION labelPosition = [[markDef objectForKey:@"position"] integerValue];
+    if([markDef objectForKey:@"cutoutRadius"]) {
+       self.cutoutRadius = [[markDef objectForKey:@"cutoutRadius"] floatValue]; 
+    } else {
+        self.cutoutRadius = kCutoutRadius;
+    }
+
+    
+    BOOL showArrow = YES;
+    if( [markDef objectForKey:@"showArrow"]) {
+        showArrow = [[markDef objectForKey:@"showArrow"] boolValue];
+    }
     // Delegate (coachMarksView:willNavigateTo:atIndex:)
     if ([self.delegate respondsToSelector:@selector(coachMarksView:willNavigateToIndex:)]) {
         [self.delegate coachMarksView:self willNavigateToIndex:markIndex];
@@ -186,21 +200,101 @@ static const BOOL kEnableContinueLabel = YES;
     self.lblCaption.frame = (CGRect){{0.0f, 0.0f}, {self.maxLblWidth, 0.0f}};
     self.lblCaption.text = markCaption;
     [self.lblCaption sizeToFit];
-    CGFloat y = markRect.origin.y + markRect.size.height + self.lblSpacing;
-    CGFloat bottomY = y + self.lblCaption.frame.size.height + self.lblSpacing;
-    if (bottomY > self.bounds.size.height) {
-        y = markRect.origin.y - self.lblSpacing - self.lblCaption.frame.size.height;
-    }
+    CGFloat y;
     CGFloat x;
-    if(labelPosition == WS_LABEL_POSITON_CENTER) {
-        x =floorf((self.bounds.size.width - self.lblCaption.frame.size.width) / 2.0f);
-    } else if(labelPosition == WS_LABEL_POSITON_RIGHT) {
-        CGRect screenRect = [[UIScreen mainScreen] bounds];
-        CGFloat screenWidth = screenRect.size.width;
-        x = screenWidth - self.lblCaption.frame.size.width - kLabelMargin;
-    } else {
-        x = kLabelMargin;
+    [self.arrowImage removeFromSuperview];
+    switch (labelAlignment) {
+        case WS_LABEL_ALIGNMENT_RIGHT:
+            x =floorf(self.bounds.size.width - self.lblCaption.frame.size.width - kLabelMargin);
+            break;
+        case WS_LABEL_ALIGNMENT_LEFT:
+            x = kLabelMargin;
+            break;
+        default:
+            x =floorf((self.bounds.size.width - self.lblCaption.frame.size.width) / 2.0f);
+            break;
     }
+    
+    switch (labelPosition) {
+        case WS_LABEL_POSITION_TOP:
+            {
+                y = markRect.origin.y - self.lblCaption.frame.size.height - kLabelMargin;
+                if(showArrow) {
+                    self.arrowImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow-bottom.png"]];
+                    CGRect imageViewFrame = self.arrowImage.frame;
+                    imageViewFrame.origin.x = x;
+                    imageViewFrame.origin.y = y;
+                    self.arrowImage.frame = imageViewFrame;
+                    y -= (self.arrowImage.frame.size.height + kLabelMargin);
+                    [self addSubview:self.arrowImage];
+                }
+            }   
+            break;
+        case WS_LABEL_POSITION_LEFT:
+            {
+                y = markRect.origin.y + markRect.size.height/2 - self.lblCaption.frame.size.height/2;
+                x = self.bounds.size.width - self.lblCaption.frame.size.width - kLabelMargin - markRect.size.width;
+                if(showArrow) {
+                    self.arrowImage= [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow-right.png"]];
+                    CGRect imageViewFrame = self.arrowImage.frame;
+                    imageViewFrame.origin.x = self.bounds.size.width - self.arrowImage.frame.size.width - kLabelMargin - markRect.size.width;
+                    imageViewFrame.origin.y = y + self.lblCaption.frame.size.height/2 - imageViewFrame.size.height/2;
+                    self.arrowImage.frame = imageViewFrame;
+                    x -= (self.arrowImage.frame.size.width + kLabelMargin);
+                    [self addSubview:self.arrowImage];
+                }
+            }
+            break;
+        case WS_LABEL_POSITION_RIGHT:
+            {
+                 y = markRect.origin.y + markRect.size.height/2 - self.lblCaption.frame.size.height/2;
+                 x = markRect.origin.x + markRect.size.width + kLabelMargin;
+                if(showArrow) {
+                    
+                }
+            }
+            break;
+        case WS_LABEL_POSITION_RIGHT_BOTTOM:
+            {
+                y = markRect.origin.y + markRect.size.height + self.lblSpacing;
+                CGFloat bottomY = y + self.lblCaption.frame.size.height + self.lblSpacing;
+                if (bottomY > self.bounds.size.height) {
+                    y = markRect.origin.y - self.lblSpacing - self.lblCaption.frame.size.height;
+                }
+                x = markRect.origin.x + markRect.size.width + kLabelMargin;
+                if(showArrow) {
+                    self.arrowImage= [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow-top.png"]];
+                    CGRect imageViewFrame = self.arrowImage.frame;
+                    imageViewFrame.origin.x = x - markRect.size.width/2 - imageViewFrame.size.width/2;
+                    imageViewFrame.origin.y = y + self.lblCaption.frame.size.height/2 - imageViewFrame.size.height + kLabelMargin;
+                    y += imageViewFrame.size.height/2;
+                    self.arrowImage.frame = imageViewFrame;
+                    [self addSubview:self.arrowImage];
+                }
+            }
+            break;
+        default: {
+            y = markRect.origin.y + markRect.size.height + self.lblSpacing;
+                CGFloat bottomY = y + self.lblCaption.frame.size.height + self.lblSpacing;
+                if (bottomY > self.bounds.size.height) {
+                    y = markRect.origin.y - self.lblSpacing - self.lblCaption.frame.size.height;
+                }
+                if(showArrow) {
+                    self.arrowImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow-top.png"]];
+                    CGRect imageViewFrame = self.arrowImage.frame;
+                    imageViewFrame.origin.x = x;         
+                    imageViewFrame.origin.y = y;
+                    self.arrowImage.frame = imageViewFrame;
+                    y += (self.arrowImage.frame.size.height + kLabelMargin);
+                    [self addSubview:self.arrowImage];
+                }
+            }
+            break;
+    }
+
+
+    
+    
 
     // Animate the caption label
     self.lblCaption.frame = (CGRect){{x, y}, self.lblCaption.frame.size};
