@@ -1,8 +1,9 @@
 //
 //  WSCoachMarksView.m
-//  Version 0.2
+//  Version 0.22
 //
 //  Created by Dimitry Bentsionov on 4/1/13.
+//  Modified by Roman Barzyczack on 7/8.2013
 //  Copyright (c) 2013 Workshirt, Inc. All rights reserved.
 //
 
@@ -14,13 +15,14 @@ static const CGFloat kCutoutRadius = 2.0f;
 static const CGFloat kMaxLblWidth = 230.0f;
 static const CGFloat kLblSpacing = 35.0f;
 static const CGFloat kLabelMargin = 5.0f;
-static const CGFloat kMaskAlpha = 0.7f;
+static const CGFloat kMaskAlpha = 0.75f;
 static const BOOL kEnableContinueLabel = YES;
 
 @implementation WSCoachMarksView {
     CAShapeLayer *mask;
     NSUInteger markIndex;
     UILabel *lblContinue;
+    UIView *currentView;
 }
 
 #pragma mark - Properties
@@ -162,6 +164,11 @@ static const BOOL kEnableContinueLabel = YES;
                      }];
 }
 
+- (void)handleSingleTap:(UITapGestureRecognizer *)recognizer {
+    [self.delegate coachMarksViewDidClicked:self atIndex:markIndex];
+    [self cleanup];
+}
+
 - (void)goToCoachMarkIndexed:(NSInteger)index {
 
     // Out of bounds
@@ -184,7 +191,19 @@ static const BOOL kEnableContinueLabel = YES;
     } else {
         self.cutoutRadius = kCutoutRadius;
     }
-
+    
+    if ([self.delegate respondsToSelector:@selector(coachMarksViewDidClicked:atIndex:)]) {
+        [currentView removeFromSuperview];
+        currentView = [[UIView alloc] initWithFrame:markRect];
+        currentView.backgroundColor = [UIColor clearColor];
+        UITapGestureRecognizer *singleFingerTap =
+        [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                action:@selector(handleSingleTap:)];
+        [currentView addGestureRecognizer:singleFingerTap];
+        [self addSubview:currentView];
+    }
+    
+    
     
     BOOL showArrow = YES;
     if( [markDef objectForKey:@"showArrow"]) {
@@ -266,7 +285,7 @@ static const BOOL kEnableContinueLabel = YES;
                     self.arrowImage= [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow-top.png"]];
                     CGRect imageViewFrame = self.arrowImage.frame;
                     imageViewFrame.origin.x = x - markRect.size.width/2 - imageViewFrame.size.width/2;
-                    imageViewFrame.origin.y = y + self.lblCaption.frame.size.height/2 - imageViewFrame.size.height + kLabelMargin;
+                    imageViewFrame.origin.y = y - kLabelMargin; //self.lblCaption.frame.size.height/2
                     y += imageViewFrame.size.height/2;
                     self.arrowImage.frame = imageViewFrame;
                     [self addSubview:self.arrowImage];

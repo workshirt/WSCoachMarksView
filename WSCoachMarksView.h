@@ -1,11 +1,10 @@
 //
 //  WSCoachMarksView.h
-//  Version 0.21
+//  Version 0.2
 //
 //  Created by Dimitry Bentsionov on 4/1/13.
 //  Copyright (c) 2013 Workshirt, Inc. All rights reserved.
 //
-//  Modified by Roman Barzyczak on 5/8/13.
 
 // This code is distributed under the terms and conditions of the MIT license.
 //
@@ -40,10 +39,18 @@
 #endif
 
 typedef enum {
-    WS_LABEL_POSITON_CENTER,
-    WS_LABEL_POSITON_LEFT,
-    WS_LABEL_POSITON_RIGHT,
-} WS_LABEL_POSITON;
+    WS_LABEL_ALIGNMENT_CENTER,
+    WS_LABEL_ALIGNMENT_LEFT,
+    WS_LABEL_ALIGNMENT_RIGHT,
+} WS_LABEL_ALIGNMENT;
+
+typedef enum {
+    WS_LABEL_POSITION_BOTTOM,
+    WS_LABEL_POSITION_LEFT,
+    WS_LABEL_POSITION_TOP,
+    WS_LABEL_POSITION_RIGHT,
+    WS_LABEL_POSITION_RIGHT_BOTTOM
+} WS_LABEL_POSITION;
 
 @protocol WSCoachMarksViewDelegate;
 
@@ -58,6 +65,7 @@ typedef enum {
 @property (nonatomic) CGFloat maxLblWidth;
 @property (nonatomic) CGFloat lblSpacing;
 @property (nonatomic) BOOL enableContinueLabel;
+@property (nonatomic, strong) UIImageView *arrowImage;
 
 - (id)initWithFrame:(CGRect)frame coachMarks:(NSArray *)marks;
 - (void)start;
@@ -71,5 +79,5 @@ typedef enum {
 - (void)coachMarksView:(WSCoachMarksView*)coachMarksView didNavigateToIndex:(NSInteger)index;
 - (void)coachMarksViewWillCleanup:(WSCoachMarksView*)coachMarksView;
 - (void)coachMarksViewDidCleanup:(WSCoachMarksView*)coachMarksView;
-
+- (void)coachMarksViewDidClicked:(WSCoachMarksView*)coachMarksView atIndex:(NSInteger)index;
 @end
