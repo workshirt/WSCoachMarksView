@@ -8,6 +8,21 @@
 
 #import <UIKit/UIKit.h>
 
+/*
+    ## Usage Example
+ 
+     NSArray *coachMarks = @[
+             @{
+                 @"rect": [NSValue valueWithCGRect:[button rectToMarkInView:self.view]],
+                 @"caption": @"This is some awesome button!"
+             }
+         ];
+ 
+     WSCoachMarksView *coachMarksView = [[WSCoachMarksView alloc] initWithFrame:self.view.frame coachMarks:coachMarks];
+     [self.view addSubview:coachMarksView];
+     [coachMarksView start];
+ */
+
 @interface UIView (WSCoachMarks)
 
 - (CGRect)rectToMarkInView:(UIView *)view;
