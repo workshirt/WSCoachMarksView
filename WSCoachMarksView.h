@@ -81,3 +81,4 @@ typedef enum {
 - (void)coachMarksViewDidCleanup:(WSCoachMarksView*)coachMarksView;
 - (void)coachMarksViewDidClicked:(WSCoachMarksView*)coachMarksView atIndex:(NSInteger)index;
 @end
+
