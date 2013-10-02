@@ -215,6 +215,7 @@ static const BOOL kEnableContinueLabel = YES;
             lblContinue.textAlignment = NSTextAlignmentCenter;
             lblContinue.text = @"Tap to continue";
             lblContinue.alpha = 0.0f;
+            lblContinue.backgroundColor = [UIColor whiteColor];
             [self addSubview:lblContinue];
             [UIView animateWithDuration:0.3f delay:1.0f options:0 animations:^{
                 lblContinue.alpha = 1.0f;
