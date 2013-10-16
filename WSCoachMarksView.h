@@ -38,6 +38,20 @@
   #endif
 #endif
 
+typedef enum {
+    WS_LABEL_ALIGNMENT_CENTER,
+    WS_LABEL_ALIGNMENT_LEFT,
+    WS_LABEL_ALIGNMENT_RIGHT,
+} WS_LABEL_ALIGNMENT;
+
+typedef enum {
+    WS_LABEL_POSITION_BOTTOM,
+    WS_LABEL_POSITION_LEFT,
+    WS_LABEL_POSITION_TOP,
+    WS_LABEL_POSITION_RIGHT,
+    WS_LABEL_POSITION_RIGHT_BOTTOM
+} WS_LABEL_POSITION;
+
 @protocol WSCoachMarksViewDelegate;
 
 @interface WSCoachMarksView : UIView
@@ -51,6 +65,7 @@
 @property (nonatomic) CGFloat maxLblWidth;
 @property (nonatomic) CGFloat lblSpacing;
 @property (nonatomic) BOOL enableContinueLabel;
+@property (nonatomic, strong) UIImageView *arrowImage;
 
 - (id)initWithFrame:(CGRect)frame coachMarks:(NSArray *)marks;
 - (void)start;
@@ -60,9 +75,10 @@
 @protocol WSCoachMarksViewDelegate <NSObject>
 
 @optional
-- (void)coachMarksView:(WSCoachMarksView*)coachMarksView willNavigateToIndex:(NSUInteger)index;
-- (void)coachMarksView:(WSCoachMarksView*)coachMarksView didNavigateToIndex:(NSUInteger)index;
+- (void)coachMarksView:(WSCoachMarksView*)coachMarksView willNavigateToIndex:(NSInteger)index;
+- (void)coachMarksView:(WSCoachMarksView*)coachMarksView didNavigateToIndex:(NSInteger)index;
 - (void)coachMarksViewWillCleanup:(WSCoachMarksView*)coachMarksView;
 - (void)coachMarksViewDidCleanup:(WSCoachMarksView*)coachMarksView;
-
+- (void)coachMarksViewDidClicked:(WSCoachMarksView*)coachMarksView atIndex:(NSInteger)index;
 @end
+
