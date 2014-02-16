@@ -19,6 +19,7 @@ static const BOOL kEnableContinueLabel = YES;
     CAShapeLayer *mask;
     NSUInteger markIndex;
     UILabel *lblContinue;
+    UIImageView *lblImageView;
 }
 
 #pragma mark - Properties
@@ -32,6 +33,7 @@ static const BOOL kEnableContinueLabel = YES;
 @synthesize maxLblWidth;
 @synthesize lblSpacing;
 @synthesize enableContinueLabel;
+@synthesize lblImageView;
 
 #pragma mark - Methods
 
@@ -82,6 +84,12 @@ static const BOOL kEnableContinueLabel = YES;
     // Capture touches
     UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(userDidTap:)];
     [self addGestureRecognizer:tapGestureRecognizer];
+
+    // Picture, should above the text.
+    self.lblImageView = [[UIImageView alloc] initWithFrame: (CGRect) {{0.0f, 0.0f}, {self.maxLblWidth, 0.0f}}];
+    self.lblImageView.backgroundColor = [UIColor clearColor];
+    self.lblImageView.alpha = 0.0f;
+    [self addSubview:self.lblImageView];
 
     // Captions
     self.lblCaption = [[UILabel alloc] initWithFrame:(CGRect){{0.0f, 0.0f}, {self.maxLblWidth, 0.0f}}];
@@ -172,6 +180,7 @@ static const BOOL kEnableContinueLabel = YES;
     // Coach mark definition
     NSDictionary *markDef = [self.coachMarks objectAtIndex:index];
     NSString *markCaption = [markDef objectForKey:@"caption"];
+    UIImage *markImage = [markDef objectForKey:@"image"];
     CGRect markRect = [[markDef objectForKey:@"rect"] CGRectValue];
 
     // Delegate (coachMarksView:willNavigateTo:atIndex:)
@@ -179,22 +188,43 @@ static const BOOL kEnableContinueLabel = YES;
         [self.delegate coachMarksView:self willNavigateToIndex:markIndex];
     }
 
+    // Calculate the image position and size
+    CGRect imageRect = (CGRect) {{0.0f, 0.0f}, {0.0f, 0.0f}};
+    if (markImage) {
+        self.lblImageView.alpha = 0.0f;
+        self.lblImageView.image = markImage;
+        [self.lblImageView sizeToFit];
+        CGFloat y = markRect.origin.y + markRect.size.height + self.lblSpacing;
+        CGFloat bottomY = y + self.lblImageView.frame.size.height + self.lblSpacing;
+        if (bottomY > self.bounds.size.height) {
+            y = markRect.origin.y - self.lblSpacing  - self.lblImageView.frame.size.height;
+        }
+        CGFloat x = floorf((self.bounds.size.width - self.lblImageView.frame.size.width) / 2.0f);
+        imageRect = (CGRect){{x, y}, self.lblImageView.frame.size};
+    } else {
+        imageRect = markRect;
+    }
+
+    self.lblImageView.frame = imageRect;
+
+
     // Calculate the caption position and size
     self.lblCaption.alpha = 0.0f;
     self.lblCaption.frame = (CGRect){{0.0f, 0.0f}, {self.maxLblWidth, 0.0f}};
     self.lblCaption.text = markCaption;
     [self.lblCaption sizeToFit];
-    CGFloat y = markRect.origin.y + markRect.size.height + self.lblSpacing;
+    CGFloat y = imageRect.origin.y + imageRect.size.height + self.lblSpacing;
     CGFloat bottomY = y + self.lblCaption.frame.size.height + self.lblSpacing;
     if (bottomY > self.bounds.size.height) {
-        y = markRect.origin.y - self.lblSpacing - self.lblCaption.frame.size.height;
+        y = imageRect.origin.y - self.lblSpacing - self.lblCaption.frame.size.height;
     }
     CGFloat x = floorf((self.bounds.size.width - self.lblCaption.frame.size.width) / 2.0f);
 
-    // Animate the caption label
+    // Animate the caption label and Image View (if have)
     self.lblCaption.frame = (CGRect){{x, y}, self.lblCaption.frame.size};
     [UIView animateWithDuration:0.3f animations:^{
         self.lblCaption.alpha = 1.0f;
+        if (markImage) self.lblImageView.alpha = 1.0f;
     }];
 
     // If first mark, set the cutout to the center of first mark
