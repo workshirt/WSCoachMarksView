@@ -287,7 +287,7 @@ static const BOOL kEnablePaging = NO;
                 lblContinue.text = @"Tap to continue";
             }
             lblContinue.alpha = 0.0f;
-            lblContinue.backgroundColor = [UIColor whiteColor];
+            lblContinue.backgroundColor = [UIColor clearColor];
             [self addSubview:lblContinue];
             [UIView animateWithDuration:0.3f delay:1.0f options:0 animations:^{
                 lblContinue.alpha = 1.0f;
