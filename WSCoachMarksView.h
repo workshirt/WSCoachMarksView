@@ -45,12 +45,15 @@
 @property (nonatomic, WS_WEAK) id<WSCoachMarksViewDelegate> delegate;
 @property (nonatomic, retain) NSArray *coachMarks;
 @property (nonatomic, retain) UILabel *lblCaption;
+@property (nonatomic, retain) UIPageControl *pageIndicator;
 @property (nonatomic, retain) UIColor *maskColor;
 @property (nonatomic) CGFloat animationDuration;
 @property (nonatomic) CGFloat cutoutRadius;
 @property (nonatomic) CGFloat maxLblWidth;
 @property (nonatomic) CGFloat lblSpacing;
+@property (nonatomic) CGRect  lblFrame;
 @property (nonatomic) BOOL enableContinueLabel;
+@property (nonatomic) BOOL enablePaging;
 
 - (id)initWithFrame:(CGRect)frame coachMarks:(NSArray *)marks;
 - (void)start;

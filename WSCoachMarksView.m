@@ -14,6 +14,7 @@ static const CGFloat kCutoutRadius = 2.0f;
 static const CGFloat kMaxLblWidth = 230.0f;
 static const CGFloat kLblSpacing = 35.0f;
 static const BOOL kEnableContinueLabel = YES;
+static const BOOL kEnablePaging = NO;
 
 @implementation WSCoachMarksView {
     CAShapeLayer *mask;
@@ -26,12 +27,14 @@ static const BOOL kEnableContinueLabel = YES;
 @synthesize delegate;
 @synthesize coachMarks;
 @synthesize lblCaption;
+@synthesize pageIndicator;
 @synthesize maskColor = _maskColor;
 @synthesize animationDuration;
 @synthesize cutoutRadius;
 @synthesize maxLblWidth;
 @synthesize lblSpacing;
 @synthesize enableContinueLabel;
+@synthesize enablePaging = _enablePaging;
 
 #pragma mark - Methods
 
@@ -72,6 +75,9 @@ static const BOOL kEnableContinueLabel = YES;
     self.maxLblWidth = kMaxLblWidth;
     self.lblSpacing = kLblSpacing;
     self.enableContinueLabel = kEnableContinueLabel;
+    self.enablePaging = kEnablePaging;
+    self.lblFrame = CGRectNull;
+    self.pageIndicator = nil;
 
     // Shape layer mask
     mask = [CAShapeLayer layer];
@@ -96,6 +102,34 @@ static const BOOL kEnableContinueLabel = YES;
 
     // Hide until unvoked
     self.hidden = YES;
+}
+
+#pragma mark - Paging
+
+- (void)setEnablePaging:(BOOL)enablePaging {
+    _enablePaging = enablePaging;
+    //add page indicator and gestures
+    if ((enablePaging) && (!self.pageIndicator)) {
+        self.pageIndicator = [[UIPageControl alloc ] initWithFrame:(CGRect){{0, self.bounds.size.height - 100.0f}, {self.bounds.size.width, 30.0f}}];
+        self.pageIndicator.numberOfPages = [self.coachMarks count];
+        self.pageIndicator.currentPage = 0;
+        [self addSubview:self.pageIndicator];
+        
+        UISwipeGestureRecognizer *swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(userDidSwipe:)];
+        [self addGestureRecognizer:swipeGestureRecognizer];
+        swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(userDidSwipe:)];
+        swipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionLeft;
+        [self addGestureRecognizer:swipeGestureRecognizer];
+    } else {
+        [self.pageIndicator removeFromSuperview];
+        self.pageIndicator = nil;
+        for (UIGestureRecognizer *recognizer in self.gestureRecognizers)
+        {
+            if ([recognizer isKindOfClass:[UISwipeGestureRecognizer class]]) {
+                [self removeGestureRecognizer:recognizer];
+            }
+        }
+    }
 }
 
 #pragma mark - Cutout modify
@@ -143,6 +177,11 @@ static const BOOL kEnableContinueLabel = YES;
     [self goToCoachMarkIndexed:(markIndex+1)];
 }
 
+- (void)userDidSwipe:(UISwipeGestureRecognizer *)recognizer {
+    NSInteger offset =  (recognizer.direction == UISwipeGestureRecognizerDirectionRight)? -1:1;
+    [self goToCoachMarkIndexed:(markIndex +offset)];
+}
+
 #pragma mark - Navigation
 
 - (void)start {
@@ -166,6 +205,9 @@ static const BOOL kEnableContinueLabel = YES;
         return;
     }
 
+    //paging direction
+    BOOL pagingRight = (index < markIndex);
+    
     // Current index
     markIndex = index;
 
@@ -192,10 +234,35 @@ static const BOOL kEnableContinueLabel = YES;
     CGFloat x = floorf((self.bounds.size.width - self.lblCaption.frame.size.width) / 2.0f);
 
     // Animate the caption label
-    self.lblCaption.frame = (CGRect){{x, y}, self.lblCaption.frame.size};
-    [UIView animateWithDuration:0.3f animations:^{
-        self.lblCaption.alpha = 1.0f;
-    }];
+    CGRect lblCaptionFrame = (CGRect){{x, y}, self.lblCaption.frame.size};
+    if (!CGRectIsNull(self.lblFrame)) {
+        lblCaptionFrame = self.lblFrame;
+    }
+    self.lblCaption.frame = lblCaptionFrame;
+    if (self.enablePaging) {
+        self.pageIndicator.currentPage = index;
+        
+        CGRect lblCaptionOffscreenFrame = lblCaptionFrame;
+        if(pagingRight) {
+            lblCaptionOffscreenFrame.origin.x = -1000;
+        } else {
+            lblCaptionOffscreenFrame.origin.x = 1000;
+        }
+        self.lblCaption.frame = lblCaptionOffscreenFrame;
+        [UIView animateWithDuration:0.3f
+                              delay:0.0f
+                            options:UIViewAnimationOptionCurveEaseInOut
+                         animations:^{
+                             self.lblCaption.alpha = 1.0f;
+                             self.lblCaption.frame = lblCaptionFrame;
+                         }
+                         completion:^(BOOL finished){ }
+         ];
+    } else {
+        [UIView animateWithDuration:0.3f animations:^{
+            self.lblCaption.alpha = 1.0f;
+        }];
+    }
 
     // If first mark, set the cutout to the center of first mark
     if (markIndex == 0) {
@@ -210,12 +277,17 @@ static const BOOL kEnableContinueLabel = YES;
     // Show continue lbl if first mark
     if (self.enableContinueLabel) {
         if (markIndex == 0) {
-            lblContinue = [[UILabel alloc] initWithFrame:(CGRect){{0, self.bounds.size.height - 30.0f}, {self.bounds.size.width, 30.0f}}];
-            lblContinue.font = [UIFont boldSystemFontOfSize:13.0f];
+            lblContinue = [[UILabel alloc] initWithFrame:(CGRect){{0, self.bounds.size.height - 80.0f}, {self.bounds.size.width, 30.0f}}];
+            lblContinue.font = self.lblCaption.font;
+            lblContinue.textColor = self.lblCaption.textColor;
             lblContinue.textAlignment = NSTextAlignmentCenter;
-            lblContinue.text = @"Tap to continue";
+            if (self.enablePaging) {
+                lblContinue.text = @"Swipe to continue";
+            } else {
+                lblContinue.text = @"Tap to continue";
+            }
             lblContinue.alpha = 0.0f;
-            lblContinue.backgroundColor = [UIColor whiteColor];
+            lblContinue.backgroundColor = [UIColor clearColor];
             [self addSubview:lblContinue];
             [UIView animateWithDuration:0.3f delay:1.0f options:0 animations:^{
                 lblContinue.alpha = 1.0f;
@@ -242,6 +314,17 @@ static const BOOL kEnableContinueLabel = YES;
                          self.alpha = 0.0f;
                      }
                      completion:^(BOOL finished) {
+                         // Remove subviews...
+                         [self.lblCaption removeFromSuperview];
+                         self.lblCaption = nil;
+                         [self.pageIndicator removeFromSuperview];
+                         self.pageIndicator = nil;
+                         //and gestures
+                         for (UIGestureRecognizer *recognizer in self.gestureRecognizers)
+                         {
+                             [self removeGestureRecognizer:recognizer];
+                         }
+                         
                          // Remove self
                          [self removeFromSuperview];
 
