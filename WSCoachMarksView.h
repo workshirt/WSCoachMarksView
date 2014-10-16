@@ -46,6 +46,8 @@
 @property (nonatomic, retain) NSArray *coachMarks;
 @property (nonatomic, retain) UILabel *lblCaption;
 @property (nonatomic, retain) UIColor *maskColor;
+@property (nonatomic, retain) UIColor *tapToContinueBackgroundColor;
+@property (nonatomic, retain) UIColor *tapToContinueTextColor;
 @property (nonatomic) CGFloat animationDuration;
 @property (nonatomic) CGFloat cutoutRadius;
 @property (nonatomic) CGFloat maxLblWidth;

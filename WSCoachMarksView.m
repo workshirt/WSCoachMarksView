@@ -28,6 +28,8 @@ static const BOOL kEnableContinueLabel = YES;
 @synthesize coachMarks;
 @synthesize lblCaption;
 @synthesize maskColor = _maskColor;
+@synthesize tapToContinueBackgroundColor = _tapToContinueBackgroundColor;
+@synthesize tapToContinueTextColor = _tapToContinueTextColor;
 @synthesize animationDuration;
 @synthesize cutoutRadius;
 @synthesize maxLblWidth;
@@ -75,6 +77,8 @@ static const BOOL kEnableContinueLabel = YES;
     self.lblSpacing = kLblSpacing;
     self.enableContinueLabel = kEnableContinueLabel;
     self.maskAlpha = kMaskAlpha;
+    self.tapToContinueBackgroundColor = [UIColor whiteColor];
+    self.tapToContinueTextColor = [UIColor blackColor];
 
     // Shape layer mask
     mask = [CAShapeLayer layer];
@@ -225,7 +229,8 @@ static const BOOL kEnableContinueLabel = YES;
             lblContinue.textAlignment = NSTextAlignmentCenter;
             lblContinue.text = @"Tap to continue";
             lblContinue.alpha = 0.0f;
-            lblContinue.backgroundColor = [UIColor whiteColor];
+            lblContinue.backgroundColor = self.tapToContinueBackgroundColor;
+            lblContinue.textColor = self.tapToContinueTextColor;
             [self addSubview:lblContinue];
             [UIView animateWithDuration:0.3f delay:1.0f options:0 animations:^{
                 lblContinue.alpha = 1.0f;
