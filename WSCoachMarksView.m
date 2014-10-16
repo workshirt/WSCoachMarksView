@@ -13,6 +13,8 @@ static const CGFloat kAnimationDuration = 0.3f;
 static const CGFloat kCutoutRadius = 2.0f;
 static const CGFloat kMaxLblWidth = 230.0f;
 static const CGFloat kLblSpacing = 35.0f;
+static const CGFloat kMaskAlpha = 0.9f;
+static const CGFloat kTapToContinueBottomMargin = 0.0f;
 static const BOOL kEnableContinueLabel = YES;
 
 @implementation WSCoachMarksView {
@@ -27,11 +29,15 @@ static const BOOL kEnableContinueLabel = YES;
 @synthesize coachMarks;
 @synthesize lblCaption;
 @synthesize maskColor = _maskColor;
+@synthesize tapToContinueBackgroundColor = _tapToContinueBackgroundColor;
+@synthesize tapToContinueTextColor = _tapToContinueTextColor;
 @synthesize animationDuration;
 @synthesize cutoutRadius;
 @synthesize maxLblWidth;
 @synthesize lblSpacing;
 @synthesize enableContinueLabel;
+@synthesize maskAlpha = _maskAlpha;
+@synthesize tapToContinueBottomMargin;
 
 #pragma mark - Methods
 
@@ -72,11 +78,15 @@ static const BOOL kEnableContinueLabel = YES;
     self.maxLblWidth = kMaxLblWidth;
     self.lblSpacing = kLblSpacing;
     self.enableContinueLabel = kEnableContinueLabel;
+    self.maskAlpha = kMaskAlpha;
+    self.tapToContinueBackgroundColor = [UIColor whiteColor];
+    self.tapToContinueTextColor = [UIColor blackColor];
+    self.tapToContinueBottomMargin = kTapToContinueBottomMargin;
 
     // Shape layer mask
     mask = [CAShapeLayer layer];
     [mask setFillRule:kCAFillRuleEvenOdd];
-    [mask setFillColor:[[UIColor colorWithHue:0.0f saturation:0.0f brightness:0.0f alpha:0.9f] CGColor]];
+    [mask setFillColor:[[UIColor colorWithHue:0.0f saturation:0.0f brightness:0.0f alpha:self.maskAlpha] CGColor]];
     [self.layer addSublayer:mask];
 
     // Capture touches
@@ -134,6 +144,13 @@ static const BOOL kEnableContinueLabel = YES;
 - (void)setMaskColor:(UIColor *)maskColor {
     _maskColor = maskColor;
     [mask setFillColor:[maskColor CGColor]];
+}
+
+#pragma mark - Mask alpha
+
+- (void)setMaskAlpha:(CGFloat)maskAlpha {
+    _maskAlpha = maskAlpha;
+    [self setMaskColor:[[UIColor colorWithCGColor:[mask fillColor]] colorWithAlphaComponent:maskAlpha]];
 }
 
 #pragma mark - Touch handler
@@ -210,12 +227,13 @@ static const BOOL kEnableContinueLabel = YES;
     // Show continue lbl if first mark
     if (self.enableContinueLabel) {
         if (markIndex == 0) {
-            lblContinue = [[UILabel alloc] initWithFrame:(CGRect){{0, self.bounds.size.height - 30.0f}, {self.bounds.size.width, 30.0f}}];
+            lblContinue = [[UILabel alloc] initWithFrame:(CGRect){{0, self.bounds.size.height - 30.0f - self.tapToContinueBottomMargin}, {self.bounds.size.width, 30.0f}}];
             lblContinue.font = [UIFont boldSystemFontOfSize:13.0f];
             lblContinue.textAlignment = NSTextAlignmentCenter;
             lblContinue.text = @"Tap to continue";
             lblContinue.alpha = 0.0f;
-            lblContinue.backgroundColor = [UIColor whiteColor];
+            lblContinue.backgroundColor = self.tapToContinueBackgroundColor;
+            lblContinue.textColor = self.tapToContinueTextColor;
             [self addSubview:lblContinue];
             [UIView animateWithDuration:0.3f delay:1.0f options:0 animations:^{
                 lblContinue.alpha = 1.0f;
