@@ -50,6 +50,7 @@
 @property (nonatomic) CGFloat cutoutRadius;
 @property (nonatomic) CGFloat maxLblWidth;
 @property (nonatomic) CGFloat lblSpacing;
+@property (nonatomic) CGFloat maskAlpha;
 @property (nonatomic) BOOL enableContinueLabel;
 
 - (id)initWithFrame:(CGRect)frame coachMarks:(NSArray *)marks;

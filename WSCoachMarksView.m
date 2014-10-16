@@ -13,6 +13,7 @@ static const CGFloat kAnimationDuration = 0.3f;
 static const CGFloat kCutoutRadius = 2.0f;
 static const CGFloat kMaxLblWidth = 230.0f;
 static const CGFloat kLblSpacing = 35.0f;
+static const CGFloat kMaskAlpha = 0.9f;
 static const BOOL kEnableContinueLabel = YES;
 
 @implementation WSCoachMarksView {
@@ -32,6 +33,7 @@ static const BOOL kEnableContinueLabel = YES;
 @synthesize maxLblWidth;
 @synthesize lblSpacing;
 @synthesize enableContinueLabel;
+@synthesize maskAlpha;
 
 #pragma mark - Methods
 
@@ -72,11 +74,12 @@ static const BOOL kEnableContinueLabel = YES;
     self.maxLblWidth = kMaxLblWidth;
     self.lblSpacing = kLblSpacing;
     self.enableContinueLabel = kEnableContinueLabel;
+    self.maskAlpha = kMaskAlpha;
 
     // Shape layer mask
     mask = [CAShapeLayer layer];
     [mask setFillRule:kCAFillRuleEvenOdd];
-    [mask setFillColor:[[UIColor colorWithHue:0.0f saturation:0.0f brightness:0.0f alpha:0.9f] CGColor]];
+    [mask setFillColor:[[UIColor colorWithHue:0.0f saturation:0.0f brightness:0.0f alpha:self.maskAlpha] CGColor]];
     [self.layer addSublayer:mask];
 
     // Capture touches
