@@ -33,7 +33,7 @@ static const BOOL kEnableContinueLabel = YES;
 @synthesize maxLblWidth;
 @synthesize lblSpacing;
 @synthesize enableContinueLabel;
-@synthesize maskAlpha;
+@synthesize maskAlpha = _maskAlpha;
 
 #pragma mark - Methods
 
@@ -137,6 +137,13 @@ static const BOOL kEnableContinueLabel = YES;
 - (void)setMaskColor:(UIColor *)maskColor {
     _maskColor = maskColor;
     [mask setFillColor:[maskColor CGColor]];
+}
+
+#pragma mark - Mask alpha
+
+- (void)setMaskAlpha:(CGFloat)maskAlpha {
+    _maskAlpha = maskAlpha;
+    [self setMaskColor:[[UIColor colorWithCGColor:[mask fillColor]] colorWithAlphaComponent:maskAlpha]];
 }
 
 #pragma mark - Touch handler
