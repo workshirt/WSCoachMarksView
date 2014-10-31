@@ -51,6 +51,7 @@
 @property (nonatomic) CGFloat maxLblWidth;
 @property (nonatomic) CGFloat lblSpacing;
 @property (nonatomic) BOOL enableContinueLabel;
+@property (nonatomic) BOOL enableSkipButton;
 
 - (id)initWithFrame:(CGRect)frame coachMarks:(NSArray *)marks;
 - (void)start;
