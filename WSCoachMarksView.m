@@ -172,7 +172,15 @@ static const BOOL kEnableContinueLabel = YES;
     // Coach mark definition
     NSDictionary *markDef = [self.coachMarks objectAtIndex:index];
     NSString *markCaption = [markDef objectForKey:@"caption"];
-    CGRect markRect = [[markDef objectForKey:@"rect"] CGRectValue];
+    CGRect markRect;
+    if([markDef objectForKey:@"rect"] != nil)
+    {
+        markRect = [[markDef objectForKey:@"rect"] CGRectValue];
+    }
+    else {
+        UIView *view = (UIView *)[markDef objectForKey:@"view"];
+        markRect = [view convertRect:view.bounds toView:self.superview];
+    }
 
     // Delegate (coachMarksView:willNavigateTo:atIndex:)
     if ([self.delegate respondsToSelector:@selector(coachMarksView:willNavigateToIndex:)]) {
