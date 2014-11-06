@@ -32,6 +32,7 @@ static const BOOL kEnableContinueLabel = YES;
 @synthesize maxLblWidth;
 @synthesize lblSpacing;
 @synthesize enableContinueLabel;
+@synthesize enableLabelCaptionSideLocatingInLandscape;
 
 #pragma mark - Methods
 
@@ -72,6 +73,7 @@ static const BOOL kEnableContinueLabel = YES;
     self.maxLblWidth = kMaxLblWidth;
     self.lblSpacing = kLblSpacing;
     self.enableContinueLabel = kEnableContinueLabel;
+    self.enableLabelCaptionSideLocatingInLandscape = NO;
 
     // Shape layer mask
     mask = [CAShapeLayer layer];
@@ -185,6 +187,7 @@ static const BOOL kEnableContinueLabel = YES;
     self.lblCaption.text = markCaption;
     CGFloat lblCaptionMaxWidth = [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait
                                 || [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortraitUpsideDown
+                                || enableLabelCaptionSideLocatingInLandscape == NO
                                     ? self.bounds.size.width : self.bounds.size.width - markRect.size.width - self.lblSpacing * 2;
     if(self.lblCaption.frame.size.width > lblCaptionMaxWidth)
     {
@@ -193,7 +196,8 @@ static const BOOL kEnableContinueLabel = YES;
     [self.lblCaption sizeToFit];
     CGFloat x,y;
     if([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait
-       || [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortraitUpsideDown)
+       || [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortraitUpsideDown
+       || enableLabelCaptionSideLocatingInLandscape == NO)
     {
         y = markRect.origin.y + markRect.size.height + self.lblSpacing;
         CGFloat bottomY = y + self.lblCaption.frame.size.height + self.lblSpacing;
