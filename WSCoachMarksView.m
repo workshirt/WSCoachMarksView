@@ -185,10 +185,27 @@ static const BOOL kEnableContinueLabel = YES;
     self.lblCaption.alpha = 0.0f;
     self.lblCaption.frame = (CGRect){{0.0f, 0.0f}, {self.maxLblWidth, 0.0f}};
     self.lblCaption.text = markCaption;
-    CGFloat lblCaptionMaxWidth = [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait
-                                || [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortraitUpsideDown
-                                || enableLabelCaptionSideLocatingInLandscape == NO
-                                    ? self.bounds.size.width : self.bounds.size.width - markRect.size.width - self.lblSpacing * 2;
+    CGFloat lblCaptionMaxWidth;
+    if([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait
+       || [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortraitUpsideDown
+       || enableLabelCaptionSideLocatingInLandscape == NO
+       )
+    {
+        lblCaptionMaxWidth = self.bounds.size.width;
+    }
+    else {
+        if([[[[UIDevice currentDevice] systemVersion] componentsSeparatedByString:@"."][0] intValue] < 8
+           && [self.superview isKindOfClass:[UIWindow class]]
+           )
+        {
+            // iOS7 or earlier and superview is UIWindow
+            lblCaptionMaxWidth = self.bounds.size.height - markRect.size.width - self.lblSpacing * 2;
+        }
+        else {
+            lblCaptionMaxWidth = self.bounds.size.width - markRect.size.width - self.lblSpacing * 2;
+        }
+    }
+
     if(self.lblCaption.frame.size.width > lblCaptionMaxWidth)
     {
         self.lblCaption.frame = (CGRect){self.lblCaption.frame.origin, {lblCaptionMaxWidth, self.lblCaption.frame.size.height}};
@@ -207,19 +224,46 @@ static const BOOL kEnableContinueLabel = YES;
         x = floorf((self.bounds.size.width - self.lblCaption.frame.size.width) / 2.0f);
     }
     else {
-        x = markRect.origin.x + markRect.size.width + self.lblSpacing;
-        CGFloat tailX = x + self.lblCaption.frame.size.width + self.lblSpacing;
-        if(tailX > self.bounds.size.width)
+        if([[[[UIDevice currentDevice] systemVersion] componentsSeparatedByString:@"."][0] intValue] < 8
+           && [self.superview isKindOfClass:[UIWindow class]]
+           )
         {
-            x = markRect.origin.x - self.lblSpacing - self.lblCaption.frame.size.width;
-            if(x < self.lblSpacing)
+            if([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeLeft)
             {
-                self.lblCaption.frame = (CGRect){self.lblCaption.frame.origin, {markRect.origin.x - self.lblSpacing * 2, self.lblCaption.frame.size.height}};
-                [self.lblCaption sizeToFit];
-                x = self.lblSpacing;
+                self.lblCaption.transform = CGAffineTransformMakeRotation(270 * (M_PI / 180));
             }
+            else {
+                self.lblCaption.transform =  CGAffineTransformMakeRotation(90 * (M_PI / 180));
+            }
+
+            y = markRect.origin.y + markRect.size.width + self.lblSpacing;
+            CGFloat bottomY = y + self.lblCaption.frame.size.height + self.lblSpacing;
+            if (bottomY > self.bounds.size.height) {
+                y = markRect.origin.y - self.lblSpacing - self.lblCaption.frame.size.height;
+                if(y < self.lblSpacing)
+                {
+                    self.lblCaption.frame = (CGRect){self.lblCaption.frame.origin, {self.lblCaption.frame.size.width, markRect.origin.y - self.lblSpacing * 2}};
+                    [self.lblCaption sizeToFit];
+                    y = self.lblSpacing;
+                }
+            }
+            x = floorf((self.bounds.size.width - self.lblCaption.frame.size.width) / 2.0f);
         }
-        y = floorf((self.bounds.size.height - self.lblCaption.frame.size.height) / 2.0f);
+        else {
+            x = markRect.origin.x + markRect.size.width + self.lblSpacing;
+            CGFloat tailX = x + self.lblCaption.frame.size.width + self.lblSpacing;
+            if(tailX > self.bounds.size.width)
+            {
+                x = markRect.origin.x - self.lblSpacing - self.lblCaption.frame.size.width;
+                if(x < self.lblSpacing)
+                {
+                    self.lblCaption.frame = (CGRect){self.lblCaption.frame.origin, {markRect.origin.x - self.lblSpacing * 2, self.lblCaption.frame.size.height}};
+                    [self.lblCaption sizeToFit];
+                    x = self.lblSpacing;
+                }
+            }
+            y = floorf((self.bounds.size.height - self.lblCaption.frame.size.height) / 2.0f);
+        }
     }
 
     // Animate the caption label
