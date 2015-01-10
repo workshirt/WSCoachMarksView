@@ -37,10 +37,26 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YaY-ku-N4g">
+                                <rect key="frame" x="16" y="550" width="32" height="30"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="32" id="JVd-BG-ZIF"/>
+                                    <constraint firstAttribute="height" constant="30" id="z2V-hg-gRx"/>
+                                </constraints>
+                                <state key="normal" title="Help">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="helpTapped:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="CJk-zj-dEU"/>
+                                </connections>
+                            </button>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="0.67005224160410037" green="0.66711804652859752" blue="0.8583122702205882" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="L25-ZX-F9m" secondAttribute="bottom" constant="95" id="3SN-DY-m0V"/>
+                            <constraint firstItem="YaY-ku-N4g" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" constant="16" id="7Qi-BY-0YS"/>
+                            <constraint firstAttribute="bottom" secondItem="YaY-ku-N4g" secondAttribute="bottom" constant="20" id="Nxz-Yd-c6X"/>
                             <constraint firstAttribute="centerX" secondItem="L25-ZX-F9m" secondAttribute="centerX" id="Sjf-fM-sIO"/>
                             <constraint firstItem="DW1-4m-Hzl" firstAttribute="top" secondItem="kh9-bI-dsS" secondAttribute="top" constant="79" id="Smy-tN-Un9"/>
                             <constraint firstItem="DW1-4m-Hzl" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" constant="16" id="cL8-nz-fn7"/>

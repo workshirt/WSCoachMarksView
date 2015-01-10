@@ -87,7 +87,6 @@
 				C4834ADD1A619CE200945572 /* ViewController.swift */,
 				C4834ADF1A619CE200945572 /* Main.storyboard */,
 				C4834AE21A619CE200945572 /* Images.xcassets */,
-				C4834AE41A619CE200945572 /* LaunchScreen.xib */,
 				C4834AD91A619CE200945572 /* Supporting Files */,
 				C4834AFB1A619D4600945572 /* WSCoachMarksViewDemo-Bridging-Header.h */,
 			);
@@ -97,6 +96,7 @@
 		C4834AD91A619CE200945572 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C4834AE41A619CE200945572 /* LaunchScreen.xib */,
 				C4834ADA1A619CE200945572 /* Info.plist */,
 			);
 			name = "Supporting Files";

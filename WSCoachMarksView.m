@@ -15,6 +15,7 @@ static const CGFloat kMaxLblWidth = 230.0f;
 static const CGFloat kLblSpacing = 35.0f;
 static const BOOL kEnableContinueLabel = YES;
 static const BOOL kEnableSkipButton = YES;
+static const CGFloat kCutoutPaddingDistance = 10.0f;
 
 @implementation WSCoachMarksView {
     CAShapeLayer *mask;
@@ -76,6 +77,7 @@ static const BOOL kEnableSkipButton = YES;
     self.lblSpacing = kLblSpacing;
     self.enableContinueLabel = kEnableContinueLabel;
     self.enableSkipButton = kEnableSkipButton;
+    self.cutoutPaddingDistance = kCutoutPaddingDistance;
 
     // Shape layer mask
     mask = [CAShapeLayer layer];
@@ -181,6 +183,13 @@ static const BOOL kEnableSkipButton = YES;
     NSDictionary *markDef = [self.coachMarks objectAtIndex:index];
     NSString *markCaption = [markDef objectForKey:@"caption"];
     CGRect markRect = [[markDef objectForKey:@"rect"] CGRectValue];
+    NSNumber *tagNum = [markDef objectForKey:@"tag"];
+    if (tagNum) {
+        int tagInt = [tagNum intValue];
+        UIView *parentView = self.superview;
+        UIView *targetView = [parentView viewWithTag:tagInt];
+        markRect = CGRectInset(targetView.frame, -self.cutoutPaddingDistance, -self.cutoutPaddingDistance) ;
+    }
 
     // Delegate (coachMarksView:willNavigateTo:atIndex:)
     if ([self.delegate respondsToSelector:@selector(coachMarksView:willNavigateToIndex:)]) {
