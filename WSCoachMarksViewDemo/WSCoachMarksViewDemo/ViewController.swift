@@ -27,15 +27,22 @@ class ViewController: UIViewController {
         var coachMarks: [[String: AnyObject]] = [
             [
                 "tag": 1,
-                "caption": "This is some text that you'd do something with" ],
+                "caption": "This is some text that you'd do something with",
+                "padding": 5,
+                "paddingLeft": 5,
+                "paddingRight": -10,
+                "paddingBottom": "-75%"
+            ],
             [
                 "tag": 2,
-                "caption": "Press OK and you're done!" ],
+                "padding" : 15,
+                "caption": "Press OK and you're done!"
+            ],
         ]
         var coachMarksView = WSCoachMarksView(frame: self.view.bounds, coachMarks: coachMarks)
 //        coachMarksView.maskColor = UIColor(white: 1, alpha: 0.92)
         coachMarksView.cutoutRadius = 10
-//        coachMarksView.cutoutPaddingDistance = 15
+//        coachMarksView.cutoutPaddingDistance = 0
         self.coachMarksView = coachMarksView
         view.addSubview(coachMarksView)
         coachMarksView.start()

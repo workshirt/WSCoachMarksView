@@ -169,6 +169,26 @@ static const CGFloat kCutoutPaddingDistance = 10.0f;
     [self goToCoachMarkIndexed:self.coachMarks.count];
 }
 
+- (CGFloat)getPadding:(NSString *)key fromMarkDef:(NSDictionary *)markDef forViewSize:(CGFloat)viewSize withDefault:(CGFloat)defaultPadding {
+    id paddingPtr = [markDef objectForKey:key];
+    if ([paddingPtr isKindOfClass:[NSString class]]) {
+        NSString *paddingStr = (NSString *)paddingPtr;
+        if ([paddingStr containsString:@"%"]) {
+            float percentage = [(NSNumber *)paddingStr floatValue];
+            return (percentage  / 100) * viewSize;
+        } else {
+            NSLog(@"getPadding... failed to get percentage from string '%@'", paddingStr);
+            return defaultPadding;
+        }
+    } else if ([paddingPtr isKindOfClass:[NSNumber class]]) {
+        NSNumber *paddingNum = (NSNumber *)paddingPtr;
+        return [paddingNum floatValue];
+    } else {
+        return defaultPadding;
+    }
+    return defaultPadding;
+}
+
 - (void)goToCoachMarkIndexed:(NSUInteger)index {
     // Out of bounds
     if (index >= self.coachMarks.count) {
@@ -188,8 +208,18 @@ static const CGFloat kCutoutPaddingDistance = 10.0f;
         int tagInt = [tagNum intValue];
         UIView *parentView = self.superview;
         UIView *targetView = [parentView viewWithTag:tagInt];
-        markRect = CGRectInset(targetView.frame, -self.cutoutPaddingDistance, -self.cutoutPaddingDistance) ;
+
+        CGFloat defaultPadding = [self getPadding:@"padding" fromMarkDef:markDef forViewSize:0 withDefault:self.cutoutPaddingDistance];
+
+        CGFloat paddingTop = [self getPadding:@"paddingTop" fromMarkDef:markDef forViewSize:targetView.frame.size.height withDefault:defaultPadding];
+        CGFloat paddingBottom = [self getPadding:@"paddingBottom" fromMarkDef:markDef forViewSize:targetView.frame.size.height withDefault:defaultPadding];
+        CGFloat paddingLeft = [self getPadding:@"paddingLeft" fromMarkDef:markDef forViewSize:targetView.frame.size.width withDefault:defaultPadding];
+        CGFloat paddingRight = [self getPadding:@"paddingRight" fromMarkDef:markDef forViewSize:targetView.frame.size.width withDefault:defaultPadding];
+
+        markRect = CGRectMake(targetView.frame.origin.x - paddingLeft, targetView.frame.origin.y - paddingTop, targetView.frame.size.width + paddingLeft + paddingRight, targetView.frame.size.height + paddingTop + paddingBottom);
+//        NSLog(@"Tag: %d, origFrame: %@, newFrame: %@ caption: %@", tagInt, NSStringFromCGRect(targetView.frame), NSStringFromCGRect(markRect), markCaption );
     }
+
 
     // Delegate (coachMarksView:willNavigateTo:atIndex:)
     if ([self.delegate respondsToSelector:@selector(coachMarksView:willNavigateToIndex:)]) {
