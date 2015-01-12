@@ -189,6 +189,37 @@ static const CGFloat kCutoutPaddingDistance = 10.0f;
     return defaultPadding;
 }
 
+// get a subview with a particular tag. This method will only look through the direct
+// children of view.  Note: we can't use [UIView viewWithTag] because viewWithTag:
+//     * includes itself (so it's impossible to get a view with a tag that's the same as the parent's tag)
+//     * includes all subviews recurisvely (effectively, this means that a tag must be unique across the entire hierarchy).
+- (UIView *)getSubviewWithTag:(int)tag fromParentView:(UIView *)parentView {
+    // in iOS7, a UITableView now has a UITableViewWrapper that contains the cells,
+    // so we look for that and make it the parent
+    if ([parentView isKindOfClass:[UITableView class]]) {
+        BOOL foundParent = NO;
+        for (UIView *view in [parentView subviews]) {
+            for (UIView *subview in [view subviews]) {
+                if ([subview isKindOfClass:[UITableViewCell class]]) {
+                    parentView = view;
+                    foundParent = YES;
+                    break;
+                }
+            }
+            if (foundParent) {
+                break;
+            }
+        }
+    }
+    NSArray *views = [parentView subviews];
+    for (UIView *view in views) {
+        if (view.tag == tag) {
+            return view;
+        }
+    }
+    return nil;
+}
+
 - (void)goToCoachMarkIndexed:(NSUInteger)index {
     // Out of bounds
     if (index >= self.coachMarks.count) {
@@ -212,9 +243,11 @@ static const CGFloat kCutoutPaddingDistance = 10.0f;
             int count = 0;
             for (NSNumber *num in (NSArray *)tagObj) {
                 count++;
-                targetView = [parentView viewWithTag:[num intValue]];
+                targetView = [self getSubviewWithTag:[num intValue] fromParentView:parentView];
                 if (targetView) {
-                    parentView = targetView;
+                    if (count < [(NSArray *)tagObj count]) {
+                        parentView = targetView;
+                    }
                 } else {
                     NSLog(@"Could not find tag element number %d in tag array %@", count, tagObj);
                     targetView = nil;
@@ -222,7 +255,7 @@ static const CGFloat kCutoutPaddingDistance = 10.0f;
                 }
             }
         } else {
-            targetView = [parentView viewWithTag:[(NSNumber *)tagObj intValue]];
+            targetView = [self getSubviewWithTag:[(NSNumber *)tagObj intValue] fromParentView:parentView];
         }
 
         CGFloat defaultPadding = [self getPadding:@"padding" fromMarkDef:markDef forViewSize:0 withDefault:self.cutoutPaddingDistance];
@@ -235,7 +268,6 @@ static const CGFloat kCutoutPaddingDistance = 10.0f;
 
         markRect = [self convertRect:convertedRect fromView:parentView];
     }
-
 
     // Delegate (coachMarksView:willNavigateTo:atIndex:)
     if ([self.delegate respondsToSelector:@selector(coachMarksView:willNavigateToIndex:)]) {

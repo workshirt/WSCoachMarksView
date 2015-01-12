@@ -72,7 +72,7 @@ class ViewController: UIViewController, UITableViewDataSource {
     }
 
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
+        return 2
     }
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -84,7 +84,7 @@ class ViewController: UIViewController, UITableViewDataSource {
         let cell:UITableViewCell = tableView.dequeueReusableCellWithIdentifier("reuse1", forIndexPath: indexPath) as UITableViewCell
         cell.textLabel?.text = "reuse \(indexPath.row)"
         NSLog("cellForIndexPath: \(indexPath.row)")
-        cell.tag = indexPath.row + 1
+        cell.tag = indexPath.row + 1 + (indexPath.section * 10)
         return cell
     }
 
