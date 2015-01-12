@@ -15,6 +15,7 @@ static const CGFloat kMaxLblWidth = 230.0f;
 static const CGFloat kLblSpacing = 35.0f;
 static const BOOL kEnableContinueLabel = YES;
 static const BOOL kEnableSkipButton = YES;
+static const CGFloat kCutoutPaddingDistance = 10.0f;
 
 @implementation WSCoachMarksView {
     CAShapeLayer *mask;
@@ -76,6 +77,7 @@ static const BOOL kEnableSkipButton = YES;
     self.lblSpacing = kLblSpacing;
     self.enableContinueLabel = kEnableContinueLabel;
     self.enableSkipButton = kEnableSkipButton;
+    self.cutoutPaddingDistance = kCutoutPaddingDistance;
 
     // Shape layer mask
     mask = [CAShapeLayer layer];
@@ -167,6 +169,57 @@ static const BOOL kEnableSkipButton = YES;
     [self goToCoachMarkIndexed:self.coachMarks.count];
 }
 
+- (CGFloat)getPadding:(NSString *)key fromMarkDef:(NSDictionary *)markDef forViewSize:(CGFloat)viewSize withDefault:(CGFloat)defaultPadding {
+    id paddingPtr = [markDef objectForKey:key];
+    if ([paddingPtr isKindOfClass:[NSString class]]) {
+        NSString *paddingStr = (NSString *)paddingPtr;
+        if ([paddingStr containsString:@"%"]) {
+            float percentage = [(NSNumber *)paddingStr floatValue];
+            return (percentage  / 100) * viewSize;
+        } else {
+            NSLog(@"getPadding... failed to get percentage from string '%@'", paddingStr);
+            return defaultPadding;
+        }
+    } else if ([paddingPtr isKindOfClass:[NSNumber class]]) {
+        NSNumber *paddingNum = (NSNumber *)paddingPtr;
+        return [paddingNum floatValue];
+    } else {
+        return defaultPadding;
+    }
+    return defaultPadding;
+}
+
+// get a subview with a particular tag. This method will only look through the direct
+// children of view.  Note: we can't use [UIView viewWithTag] because viewWithTag:
+//     * includes itself (so it's impossible to get a view with a tag that's the same as the parent's tag)
+//     * includes all subviews recurisvely (effectively, this means that a tag must be unique across the entire hierarchy).
+- (UIView *)getSubviewWithTag:(int)tag fromParentView:(UIView *)parentView {
+    // in iOS7, a UITableView now has a UITableViewWrapper that contains the cells,
+    // so we look for that and make it the parent
+    if ([parentView isKindOfClass:[UITableView class]]) {
+        BOOL foundParent = NO;
+        for (UIView *view in [parentView subviews]) {
+            for (UIView *subview in [view subviews]) {
+                if ([subview isKindOfClass:[UITableViewCell class]]) {
+                    parentView = view;
+                    foundParent = YES;
+                    break;
+                }
+            }
+            if (foundParent) {
+                break;
+            }
+        }
+    }
+    NSArray *views = [parentView subviews];
+    for (UIView *view in views) {
+        if (view.tag == tag) {
+            return view;
+        }
+    }
+    return nil;
+}
+
 - (void)goToCoachMarkIndexed:(NSUInteger)index {
     // Out of bounds
     if (index >= self.coachMarks.count) {
@@ -181,6 +234,40 @@ static const BOOL kEnableSkipButton = YES;
     NSDictionary *markDef = [self.coachMarks objectAtIndex:index];
     NSString *markCaption = [markDef objectForKey:@"caption"];
     CGRect markRect = [[markDef objectForKey:@"rect"] CGRectValue];
+    UIView *parentView = self.superview;
+    UIView *targetView;
+    id tagObj = [markDef objectForKey:@"tag"];
+    if (tagObj) {
+
+        if ([tagObj isKindOfClass:[NSArray class]]) {
+            int count = 0;
+            for (NSNumber *num in (NSArray *)tagObj) {
+                count++;
+                targetView = [self getSubviewWithTag:[num intValue] fromParentView:parentView];
+                if (targetView) {
+                    if (count < [(NSArray *)tagObj count]) {
+                        parentView = targetView;
+                    }
+                } else {
+                    NSLog(@"Could not find tag element number %d in tag array %@", count, tagObj);
+                    targetView = nil;
+                    break;
+                }
+            }
+        } else {
+            targetView = [self getSubviewWithTag:[(NSNumber *)tagObj intValue] fromParentView:parentView];
+        }
+
+        CGFloat defaultPadding = [self getPadding:@"padding" fromMarkDef:markDef forViewSize:0 withDefault:self.cutoutPaddingDistance];
+        CGFloat paddingTop = [self getPadding:@"paddingTop" fromMarkDef:markDef forViewSize:targetView.frame.size.height withDefault:defaultPadding];
+        CGFloat paddingBottom = [self getPadding:@"paddingBottom" fromMarkDef:markDef forViewSize:targetView.frame.size.height withDefault:defaultPadding];
+        CGFloat paddingLeft = [self getPadding:@"paddingLeft" fromMarkDef:markDef forViewSize:targetView.frame.size.width withDefault:defaultPadding];
+        CGFloat paddingRight = [self getPadding:@"paddingRight" fromMarkDef:markDef forViewSize:targetView.frame.size.width withDefault:defaultPadding];
+
+        CGRect convertedRect = CGRectMake(targetView.frame.origin.x - paddingLeft, targetView.frame.origin.y - paddingTop, targetView.frame.size.width + paddingLeft + paddingRight, targetView.frame.size.height + paddingTop + paddingBottom);
+
+        markRect = [self convertRect:convertedRect fromView:parentView];
+    }
 
     // Delegate (coachMarksView:willNavigateTo:atIndex:)
     if ([self.delegate respondsToSelector:@selector(coachMarksView:willNavigateToIndex:)]) {

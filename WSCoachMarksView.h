@@ -52,6 +52,7 @@
 @property (nonatomic) CGFloat lblSpacing;
 @property (nonatomic) BOOL enableContinueLabel;
 @property (nonatomic) BOOL enableSkipButton;
+@property (nonatomic) CGFloat cutoutPaddingDistance;
 
 - (id)initWithFrame:(CGRect)frame coachMarks:(NSArray *)marks;
 - (void)start;
