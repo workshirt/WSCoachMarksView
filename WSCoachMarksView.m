@@ -203,21 +203,37 @@ static const CGFloat kCutoutPaddingDistance = 10.0f;
     NSDictionary *markDef = [self.coachMarks objectAtIndex:index];
     NSString *markCaption = [markDef objectForKey:@"caption"];
     CGRect markRect = [[markDef objectForKey:@"rect"] CGRectValue];
-    NSNumber *tagNum = [markDef objectForKey:@"tag"];
-    if (tagNum) {
-        int tagInt = [tagNum intValue];
-        UIView *parentView = self.superview;
-        UIView *targetView = [parentView viewWithTag:tagInt];
+    UIView *parentView = self.superview;
+    UIView *targetView;
+    id tagObj = [markDef objectForKey:@"tag"];
+    if (tagObj) {
+
+        if ([tagObj isKindOfClass:[NSArray class]]) {
+            int count = 0;
+            for (NSNumber *num in (NSArray *)tagObj) {
+                count++;
+                targetView = [parentView viewWithTag:[num intValue]];
+                if (targetView) {
+                    parentView = targetView;
+                } else {
+                    NSLog(@"Could not find tag element number %d in tag array %@", count, tagObj);
+                    targetView = nil;
+                    break;
+                }
+            }
+        } else {
+            targetView = [parentView viewWithTag:[(NSNumber *)tagObj intValue]];
+        }
 
         CGFloat defaultPadding = [self getPadding:@"padding" fromMarkDef:markDef forViewSize:0 withDefault:self.cutoutPaddingDistance];
-
         CGFloat paddingTop = [self getPadding:@"paddingTop" fromMarkDef:markDef forViewSize:targetView.frame.size.height withDefault:defaultPadding];
         CGFloat paddingBottom = [self getPadding:@"paddingBottom" fromMarkDef:markDef forViewSize:targetView.frame.size.height withDefault:defaultPadding];
         CGFloat paddingLeft = [self getPadding:@"paddingLeft" fromMarkDef:markDef forViewSize:targetView.frame.size.width withDefault:defaultPadding];
         CGFloat paddingRight = [self getPadding:@"paddingRight" fromMarkDef:markDef forViewSize:targetView.frame.size.width withDefault:defaultPadding];
 
-        markRect = CGRectMake(targetView.frame.origin.x - paddingLeft, targetView.frame.origin.y - paddingTop, targetView.frame.size.width + paddingLeft + paddingRight, targetView.frame.size.height + paddingTop + paddingBottom);
-//        NSLog(@"Tag: %d, origFrame: %@, newFrame: %@ caption: %@", tagInt, NSStringFromCGRect(targetView.frame), NSStringFromCGRect(markRect), markCaption );
+        CGRect convertedRect = CGRectMake(targetView.frame.origin.x - paddingLeft, targetView.frame.origin.y - paddingTop, targetView.frame.size.width + paddingLeft + paddingRight, targetView.frame.size.height + paddingTop + paddingBottom);
+
+        markRect = [self convertRect:convertedRect fromView:parentView];
     }
 
 
