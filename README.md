@@ -40,7 +40,7 @@ Alternatively, you can directly add the `WSCoachMarksView.h` and `WSCoachMarksVi
 
 ## Usage
 
-Create a new WSCoachMarksView instance in your viewDidLoad method and pass in an array of coach mark definitions (each containing a CGRect for the rectangle and its accompanying caption).
+Create a new WSCoachMarksView instance in your viewDidLoad method and pass in an array of coach mark definitions (each containing information about the CGRect that is used as the "window" to your component, a caption, and other optional elements. See the example below.
 
 ```objective-c
 - (void)viewDidLoad {
@@ -51,35 +51,38 @@ Create a new WSCoachMarksView instance in your viewDidLoad method and pass in an
 	// Setup coach marks
 	NSArray *coachMarks = @[
 		@{
+                        // Set a simple CGRect with a caption.
 			@"rect": [NSValue valueWithCGRect:(CGRect){{0,0},{45,45}}],
 			@"caption": @"Helpful navigation menu"
 		},
 		@{
-			@"rect": [NSValue valueWithCGRect:(CGRect){{10.0f,56.0f},{300.0f,56.0f}}],
+                        // Use the UIView with the tag number 3 in top level view as the rect.  This uses the global 
+                        // cutoutPadding parameter (default 10)
+			@"tag": 3,
 			@"caption": @"Document your wedding by taking photos"
 		},
 		@{
-			@"rect": [NSValue valueWithCGRect:(CGRect){{10.0f,119.0f},{300.0f,56.0f}}],
+                        // Use the UIView with tag 6, however use specified padding.  This allows to only highlight 
+                        // a particular part of the element.
+			@"tag": 6,
+                        @"padding": 5,
+                        @"paddingLeft": 10,
+                        @"paddingBottom": "75%",
 			@"caption": @"Your wedding photo album"
 		},
 		@{
-			@"rect": [NSValue valueWithCGRect:(CGRect){{10.0f,182.0f},{300.0f,56.0f}}],
+                        // Use the UIView with tag 5 that is a subview of a view with tag 10
+                        // This can be done for static nested views as well as UITableViews and UICollectionViews.
+			@"tag": [ 10, 5 ],
 			@"caption": @"View and manage your friends & family"
 		},
-		@{
-			@"rect": [NSValue valueWithCGRect:(CGRect){{10.0f,245.0f},{300.0f,56.0f}}],
-			@"caption": @"Invite friends to get more photos"
-		},
-		@{
-			@"rect": [NSValue valueWithCGRect:(CGRect){{0.0f,410.0f},{320.0f,50.0f}}],
-			@"caption": @"Keep your guests informed with your wedding details"
-		}
 	];
 	WSCoachMarksView *coachMarksView = [[WSCoachMarksView alloc] initWithFrame:self.view.bounds coachMarks:coachMarks];
 	[self.view addSubview:coachMarksView];
 	[coachMarksView start];
 }
 ```
+
 
 Remember to add the coach marks view to the top-most controller. So in you have a navigation controller, use:
 
@@ -150,6 +153,9 @@ Define how far the captions label appears above or below the cutout (default: 35
 ### `enableContinueLabel` (BOOL)
 
 'Tap to continue' label pops up by default to guide the user at the first coach mark (default: YES).
+
+### `cutoutPaddingDistance` (CGFloat)
+The cutout rectangle padding distance used with the specified CGRect is dynamically specified using the `tag` parameter
 
 ## WSCoachMarksViewDelegate
 
