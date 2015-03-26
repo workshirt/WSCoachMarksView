@@ -19,8 +19,6 @@ static const BOOL kEnableSkipButton = YES;
 @implementation WSCoachMarksView {
     CAShapeLayer *mask;
     NSUInteger markIndex;
-    UILabel *lblContinue;
-    UIButton *btnSkipCoach;
 }
 
 #pragma mark - Properties
@@ -100,6 +98,28 @@ static const BOOL kEnableSkipButton = YES;
 
     // Hide until unvoked
     self.hidden = YES;
+
+    CGFloat lblContinueWidth = self.enableSkipButton ? (70.0/100.0) * self.bounds.size.width : self.bounds.size.width;
+    CGFloat btnSkipWidth = self.bounds.size.width - lblContinueWidth;
+
+    // Show continue lbl if first mark
+    if (self.enableContinueLabel) {
+        self.lblContinue = [[UILabel alloc] initWithFrame:(CGRect){{0, self.bounds.size.height - 30.0f}, {lblContinueWidth, 30.0f}}];
+        self.lblContinue.font = [UIFont boldSystemFontOfSize:13.0f];
+        self.lblContinue.textAlignment = NSTextAlignmentCenter;
+        self.lblContinue.text = @"Tap to continue";
+        self.lblContinue.alpha = 0.0f;
+        self.lblContinue.backgroundColor = [UIColor whiteColor];
+    }
+
+    if (self.enableSkipButton) {
+        self.btnSkipCoach = [[UIButton alloc] initWithFrame:(CGRect){{lblContinueWidth, self.bounds.size.height - 30.0f}, {btnSkipWidth, 30.0f}}];
+        [self.btnSkipCoach addTarget:self action:@selector(skipCoach) forControlEvents:UIControlEventTouchUpInside];
+        [self.btnSkipCoach setTitle:@"Skip" forState:UIControlStateNormal];
+        self.btnSkipCoach.titleLabel.font = [UIFont boldSystemFontOfSize:13.0f];
+        self.btnSkipCoach.alpha = 0.0f;
+        self.btnSkipCoach.tintColor = [UIColor whiteColor];
+    }
 }
 
 #pragma mark - Cutout modify
@@ -215,39 +235,24 @@ static const BOOL kEnableSkipButton = YES;
     // Animate the cutout
     [self animateCutoutToRect:markRect];
 
-    CGFloat lblContinueWidth = self.enableSkipButton ? (70.0/100.0) * self.bounds.size.width : self.bounds.size.width;
-    CGFloat btnSkipWidth = self.bounds.size.width - lblContinueWidth;
-    
     // Show continue lbl if first mark
     if (self.enableContinueLabel) {
         if (markIndex == 0) {
-            lblContinue = [[UILabel alloc] initWithFrame:(CGRect){{0, self.bounds.size.height - 30.0f}, {lblContinueWidth, 30.0f}}];
-            lblContinue.font = [UIFont boldSystemFontOfSize:13.0f];
-            lblContinue.textAlignment = NSTextAlignmentCenter;
-            lblContinue.text = @"Tap to continue";
-            lblContinue.alpha = 0.0f;
-            lblContinue.backgroundColor = [UIColor whiteColor];
-            [self addSubview:lblContinue];
+            [self addSubview:self.lblContinue];
             [UIView animateWithDuration:0.3f delay:1.0f options:0 animations:^{
-                lblContinue.alpha = 1.0f;
+                self.lblContinue.alpha = 1.0f;
             } completion:nil];
-        } else if (markIndex > 0 && lblContinue != nil) {
+        } else if (markIndex > 0 && self.lblContinue != nil) {
             // Otherwise, remove the lbl
-            [lblContinue removeFromSuperview];
-            lblContinue = nil;
+            [self.lblContinue removeFromSuperview];
+            self.lblContinue = nil;
         }
     }
-    
+
     if (self.enableSkipButton) {
-        btnSkipCoach = [[UIButton alloc] initWithFrame:(CGRect){{lblContinueWidth, self.bounds.size.height - 30.0f}, {btnSkipWidth, 30.0f}}];
-        [btnSkipCoach addTarget:self action:@selector(skipCoach) forControlEvents:UIControlEventTouchUpInside];
-        [btnSkipCoach setTitle:@"Skip" forState:UIControlStateNormal];
-        btnSkipCoach.titleLabel.font = [UIFont boldSystemFontOfSize:13.0f];
-        btnSkipCoach.alpha = 0.0f;
-        btnSkipCoach.tintColor = [UIColor whiteColor];
-        [self addSubview:btnSkipCoach];
+        [self addSubview:self.btnSkipCoach];
         [UIView animateWithDuration:0.3f delay:1.0f options:0 animations:^{
-            btnSkipCoach.alpha = 1.0f;
+            self.btnSkipCoach.alpha = 1.0f;
         } completion:nil];
     }
 }
