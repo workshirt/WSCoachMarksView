@@ -45,6 +45,8 @@
 @property (nonatomic, WS_WEAK) id<WSCoachMarksViewDelegate> delegate;
 @property (nonatomic, retain) NSArray *coachMarks;
 @property (nonatomic, retain) UILabel *lblCaption;
+@property (nonatomic, retain) UILabel *lblContinue;
+@property (nonatomic, retain) UIButton *btnSkipCoach;
 @property (nonatomic, retain) UIColor *maskColor;
 @property (nonatomic) CGFloat animationDuration;
 @property (nonatomic) CGFloat cutoutRadius;
