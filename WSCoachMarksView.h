@@ -42,6 +42,12 @@
 
 @interface WSCoachMarksView : UIView
 
+typedef enum {
+    LocationTop,
+    LocationCenter,
+    LocationBottom
+} ContinueLocation;
+
 @property (nonatomic, WS_WEAK) id<WSCoachMarksViewDelegate> delegate;
 @property (nonatomic, retain) NSArray *coachMarks;
 @property (nonatomic, retain) UILabel *lblCaption;
@@ -51,6 +57,7 @@
 @property (nonatomic) CGFloat maxLblWidth;
 @property (nonatomic) CGFloat lblSpacing;
 @property (nonatomic) BOOL enableContinueLabel;
+@property (nonatomic) ContinueLocation continueLocation;
 @property (nonatomic) BOOL enableSkipButton;
 
 - (id)initWithFrame:(CGRect)frame coachMarks:(NSArray *)marks;

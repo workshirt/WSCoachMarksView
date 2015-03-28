@@ -34,6 +34,7 @@ static const BOOL kEnableSkipButton = YES;
 @synthesize maxLblWidth;
 @synthesize lblSpacing;
 @synthesize enableContinueLabel;
+@synthesize continueLocation;
 @synthesize enableSkipButton;
 
 #pragma mark - Methods
@@ -75,6 +76,7 @@ static const BOOL kEnableSkipButton = YES;
     self.maxLblWidth = kMaxLblWidth;
     self.lblSpacing = kLblSpacing;
     self.enableContinueLabel = kEnableContinueLabel;
+    self.continueLocation = LocationBottom;
     self.enableSkipButton = kEnableSkipButton;
 
     // Shape layer mask
@@ -221,7 +223,7 @@ static const BOOL kEnableSkipButton = YES;
     // Show continue lbl if first mark
     if (self.enableContinueLabel) {
         if (markIndex == 0) {
-            lblContinue = [[UILabel alloc] initWithFrame:(CGRect){{0, self.bounds.size.height - 30.0f}, {lblContinueWidth, 30.0f}}];
+            lblContinue = [[UILabel alloc] initWithFrame:(CGRect){{0, [self yOriginForContinueLabel]}, {lblContinueWidth, 30.0f}}];
             lblContinue.font = [UIFont boldSystemFontOfSize:13.0f];
             lblContinue.textAlignment = NSTextAlignmentCenter;
             lblContinue.text = @"Tap to continue";
@@ -239,7 +241,7 @@ static const BOOL kEnableSkipButton = YES;
     }
     
     if (self.enableSkipButton) {
-        btnSkipCoach = [[UIButton alloc] initWithFrame:(CGRect){{lblContinueWidth, self.bounds.size.height - 30.0f}, {btnSkipWidth, 30.0f}}];
+        btnSkipCoach = [[UIButton alloc] initWithFrame:(CGRect){{lblContinueWidth, [self yOriginForContinueLabel]}, {btnSkipWidth, 30.0f}}];
         [btnSkipCoach addTarget:self action:@selector(skipCoach) forControlEvents:UIControlEventTouchUpInside];
         [btnSkipCoach setTitle:@"Skip" forState:UIControlStateNormal];
         btnSkipCoach.titleLabel.font = [UIFont boldSystemFontOfSize:13.0f];
@@ -249,6 +251,19 @@ static const BOOL kEnableSkipButton = YES;
         [UIView animateWithDuration:0.3f delay:1.0f options:0 animations:^{
             btnSkipCoach.alpha = 1.0f;
         } completion:nil];
+    }
+}
+
+#pragma mark - Continue label location
+
+- (CGFloat)yOriginForContinueLabel {
+    switch (self.continueLocation) {
+        case LocationTop:
+            return 30.0f;
+        case LocationCenter:
+            return self.bounds.size.height / 2 - 15.0f;
+        default:
+            return self.bounds.size.height - 30.0f;
     }
 }
 
