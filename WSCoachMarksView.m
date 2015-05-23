@@ -182,11 +182,6 @@ static const BOOL kEnableSkipButton = YES;
     NSString *markCaption = [markDef objectForKey:@"caption"];
     CGRect markRect = [[markDef objectForKey:@"rect"] CGRectValue];
 
-    // Delegate (coachMarksView:willNavigateTo:atIndex:)
-    if ([self.delegate respondsToSelector:@selector(coachMarksView:willNavigateToIndex:)]) {
-        [self.delegate coachMarksView:self willNavigateToIndex:markIndex];
-    }
-
     // Calculate the caption position and size
     self.lblCaption.alpha = 0.0f;
     self.lblCaption.frame = (CGRect){{0.0f, 0.0f}, {self.maxLblWidth, 0.0f}};
@@ -204,6 +199,12 @@ static const BOOL kEnableSkipButton = YES;
     [UIView animateWithDuration:0.3f animations:^{
         self.lblCaption.alpha = 1.0f;
     }];
+
+    // call delegate here so lblCaption frame can be used by delegate
+    // Delegate (coachMarksView:willNavigateTo:atIndex:)
+    if ([self.delegate respondsToSelector:@selector(coachMarksView:willNavigateToIndex:)]) {
+        [self.delegate coachMarksView:self willNavigateToIndex:markIndex];
+    }
 
     // If first mark, set the cutout to the center of first mark
     if (markIndex == 0) {
