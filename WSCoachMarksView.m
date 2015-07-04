@@ -111,12 +111,16 @@ static const BOOL kEnableSkipButton = YES;
     UIBezierPath *maskPath = [UIBezierPath bezierPathWithRect:self.bounds];
     UIBezierPath *cutoutPath;
     
-    if ([shape isEqualToString:@"circle"])
-        cutoutPath = [UIBezierPath bezierPathWithOvalInRect:rect];
-    else if ([shape isEqualToString:@"square"])
-        cutoutPath = [UIBezierPath bezierPathWithRect:rect];
-    else
+    if([shape lenght]){
+        if ([shape isEqualToString:@"circle"])
+            cutoutPath = [UIBezierPath bezierPathWithOvalInRect:rect];
+        else if ([shape isEqualToString:@"square"])
+            cutoutPath = [UIBezierPath bezierPathWithRect:rect];
+        else
+            cutoutPath = [UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:self.cutoutRadius];
+    } else {
         cutoutPath = [UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:self.cutoutRadius];
+    }
     
     [maskPath appendPath:cutoutPath];
     
@@ -129,13 +133,16 @@ static const BOOL kEnableSkipButton = YES;
     UIBezierPath *maskPath = [UIBezierPath bezierPathWithRect:self.bounds];
     UIBezierPath *cutoutPath;
     
-    
-    if ([shape isEqualToString:@"circle"])
-        cutoutPath = [UIBezierPath bezierPathWithOvalInRect:rect];
-    else if ([shape isEqualToString:@"square"])
-        cutoutPath = [UIBezierPath bezierPathWithRect:rect];
-    else
+    if([shape lenght]){
+        if ([shape isEqualToString:@"circle"])
+            cutoutPath = [UIBezierPath bezierPathWithOvalInRect:rect];
+        else if ([shape isEqualToString:@"square"])
+            cutoutPath = [UIBezierPath bezierPathWithRect:rect];
+        else
+            cutoutPath = [UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:self.cutoutRadius];
+    } else {
         cutoutPath = [UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:self.cutoutRadius];
+    }
     
     
     [maskPath appendPath:cutoutPath];
