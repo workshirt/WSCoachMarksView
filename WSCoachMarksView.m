@@ -9,8 +9,6 @@
 #import <QuartzCore/QuartzCore.h>
 #import "WSCoachMarksView.h"
 
-#import "VisualUtilities.h"
-
 static const CGFloat kAnimationDuration = 0.3f;
 static const CGFloat kCutoutRadius = 2.0f;
 static const CGFloat kMaxLblWidth = 230.0f;
