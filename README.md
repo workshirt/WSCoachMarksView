@@ -53,10 +53,12 @@ Create a new WSCoachMarksView instance in your viewDidLoad method and pass in an
 		@{
 			@"rect": [NSValue valueWithCGRect:(CGRect){{0,0},{45,45}}],
 			@"caption": @"Helpful navigation menu"
+			@"shape": @"circle"
 		},
 		@{
 			@"rect": [NSValue valueWithCGRect:(CGRect){{10.0f,56.0f},{300.0f,56.0f}}],
 			@"caption": @"Document your wedding by taking photos"
+			@"shape": @"square"
 		},
 		@{
 			@"rect": [NSValue valueWithCGRect:(CGRect){{10.0f,119.0f},{300.0f,56.0f}}],
@@ -122,6 +124,10 @@ Example of how to show the coach marks to your user only once (assumes `coachMar
 ### `coachMarks` (NSArray)
 
 Modify the coach marks.
+
+### `shape` (NSString)
+
+You can use 3 differents types of shape: @"circle", @"squere" or @"other" (Square with borders rounded)
 
 ### `lblCaption` (UILabel)
 
