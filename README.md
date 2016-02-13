@@ -22,7 +22,7 @@ WSCoachMarksView works on any iOS version and is built with ARC. It depends on t
 
 ## Adding WSCoachMarksView to your project
 
-### Cocoapods
+### CocoaPods
 
 [CocoaPods](http://cocoapods.org) is the recommended way to add WSCoachMarksView to your project.
 
