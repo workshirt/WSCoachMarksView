@@ -212,7 +212,14 @@ static const BOOL kEnableSkipButton = YES;
     // Calculate the caption position and size
     self.lblCaption.alpha = 0.0f;
     self.lblCaption.frame = (CGRect){{0.0f, 0.0f}, {self.maxLblWidth, 0.0f}};
-    self.lblCaption.text = markCaption;
+    
+    if([markCaption isKindOfClass:[NSAttributedString class]]) {
+        self.lblCaption.attributedText = (NSAttributedString*)markCaption;
+    } else {
+        self.lblCaption.text = markCaption;
+    }
+
+    
     [self.lblCaption sizeToFit];
     CGFloat y = markRect.origin.y + markRect.size.height + self.lblSpacing;
     CGFloat bottomY = y + self.lblCaption.frame.size.height + self.lblSpacing;
