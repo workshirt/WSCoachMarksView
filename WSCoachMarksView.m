@@ -15,6 +15,7 @@ static const CGFloat kMaxLblWidth = 230.0f;
 static const CGFloat kLblSpacing = 35.0f;
 static const BOOL kEnableContinueLabel = YES;
 static const BOOL kEnableSkipButton = YES;
+static const long skipButtonID = 7363840525714591028;
 
 @implementation WSCoachMarksView {
     CAShapeLayer *mask;
@@ -267,6 +268,8 @@ static const BOOL kEnableSkipButton = YES;
         [btnSkipCoach setTitle:@"Skip" forState:UIControlStateNormal];
         btnSkipCoach.titleLabel.font = [UIFont boldSystemFontOfSize:13.0f];
         btnSkipCoach.alpha = 0.0f;
+        btnSkipCoach.tag = skipButtonID;
+        [(UIButton*)[self viewWithTag:skipButtonID] removeFromSuperview];
         btnSkipCoach.tintColor = [UIColor whiteColor];
         [self addSubview:btnSkipCoach];
         [UIView animateWithDuration:0.3f delay:1.0f options:0 animations:^{
