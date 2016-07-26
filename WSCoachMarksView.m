@@ -44,7 +44,7 @@ static const BOOL kEnableSkipButton = YES;
     if (self) {
         // Save the coach marks
         self.coachMarks = marks;
-
+        
         // Setup
         [self setup];
     }
@@ -78,17 +78,17 @@ static const BOOL kEnableSkipButton = YES;
     self.enableContinueLabel = kEnableContinueLabel;
     self.continueLocation = LocationBottom;
     self.enableSkipButton = kEnableSkipButton;
-
+    
     // Shape layer mask
     mask = [CAShapeLayer layer];
     [mask setFillRule:kCAFillRuleEvenOdd];
     [mask setFillColor:[[UIColor colorWithHue:0.0f saturation:0.0f brightness:0.0f alpha:0.9f] CGColor]];
     [self.layer addSublayer:mask];
-
+    
     // Capture touches
     UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(userDidTap:)];
     [self addGestureRecognizer:tapGestureRecognizer];
-
+    
     // Captions
     self.lblCaption = [[UILabel alloc] initWithFrame:(CGRect){{0.0f, 0.0f}, {self.maxLblWidth, 0.0f}}];
     self.lblCaption.backgroundColor = [UIColor clearColor];
@@ -99,29 +99,47 @@ static const BOOL kEnableSkipButton = YES;
     self.lblCaption.textAlignment = NSTextAlignmentCenter;
     self.lblCaption.alpha = 0.0f;
     [self addSubview:self.lblCaption];
-
+    
     // Hide until unvoked
     self.hidden = YES;
 }
 
 #pragma mark - Cutout modify
 
-- (void)setCutoutToRect:(CGRect)rect {
+- (void)setCutoutToRect:(CGRect)rect withShape:(NSString *)shape{
     // Define shape
     UIBezierPath *maskPath = [UIBezierPath bezierPathWithRect:self.bounds];
-    UIBezierPath *cutoutPath = [UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:self.cutoutRadius];
+    UIBezierPath *cutoutPath;
+    
+    if ([shape isEqualToString:@"circle"])
+        cutoutPath = [UIBezierPath bezierPathWithOvalInRect:rect];
+    else if ([shape isEqualToString:@"square"])
+        cutoutPath = [UIBezierPath bezierPathWithRect:rect];
+    else
+        cutoutPath = [UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:self.cutoutRadius];
+    
+    
     [maskPath appendPath:cutoutPath];
-
+    
     // Set the new path
     mask.path = maskPath.CGPath;
 }
 
-- (void)animateCutoutToRect:(CGRect)rect {
+- (void)animateCutoutToRect:(CGRect)rect withShape:(NSString *)shape{
     // Define shape
     UIBezierPath *maskPath = [UIBezierPath bezierPathWithRect:self.bounds];
-    UIBezierPath *cutoutPath = [UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:self.cutoutRadius];
-    [maskPath appendPath:cutoutPath];
+    UIBezierPath *cutoutPath;
 
+    if ([shape isEqualToString:@"circle"])
+        cutoutPath = [UIBezierPath bezierPathWithOvalInRect:rect];
+    else if ([shape isEqualToString:@"square"])
+        cutoutPath = [UIBezierPath bezierPathWithRect:rect];
+    else
+        cutoutPath = [UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:self.cutoutRadius];
+    
+    
+    [maskPath appendPath:cutoutPath];
+    
     // Animate it
     CABasicAnimation *anim = [CABasicAnimation animationWithKeyPath:@"path"];
     anim.delegate = self;
@@ -175,20 +193,24 @@ static const BOOL kEnableSkipButton = YES;
         [self cleanup];
         return;
     }
-
+    
     // Current index
     markIndex = index;
-
+    
     // Coach mark definition
     NSDictionary *markDef = [self.coachMarks objectAtIndex:index];
     NSString *markCaption = [markDef objectForKey:@"caption"];
     CGRect markRect = [[markDef objectForKey:@"rect"] CGRectValue];
-
+    
+    NSString *shape = @"other";
+    if([[markDef allKeys] containsObject:@"shape"])
+        shape = [markDef objectForKey:@"shape"];
+    
     // Delegate (coachMarksView:willNavigateTo:atIndex:)
     if ([self.delegate respondsToSelector:@selector(coachMarksView:willNavigateToIndex:)]) {
         [self.delegate coachMarksView:self willNavigateToIndex:markIndex];
     }
-
+    
     // Calculate the caption position and size
     self.lblCaption.alpha = 0.0f;
     self.lblCaption.frame = (CGRect){{0.0f, 0.0f}, {self.maxLblWidth, 0.0f}};
@@ -200,23 +222,24 @@ static const BOOL kEnableSkipButton = YES;
         y = markRect.origin.y - self.lblSpacing - self.lblCaption.frame.size.height;
     }
     CGFloat x = floorf((self.bounds.size.width - self.lblCaption.frame.size.width) / 2.0f);
-
+    
     // Animate the caption label
     self.lblCaption.frame = (CGRect){{x, y}, self.lblCaption.frame.size};
+    
     [UIView animateWithDuration:0.3f animations:^{
         self.lblCaption.alpha = 1.0f;
     }];
-
+    
     // If first mark, set the cutout to the center of first mark
     if (markIndex == 0) {
         CGPoint center = CGPointMake(floorf(markRect.origin.x + (markRect.size.width / 2.0f)), floorf(markRect.origin.y + (markRect.size.height / 2.0f)));
         CGRect centerZero = (CGRect){center, CGSizeZero};
-        [self setCutoutToRect:centerZero];
+        [self setCutoutToRect:centerZero withShape:shape];
     }
-
+    
     // Animate the cutout
-    [self animateCutoutToRect:markRect];
-
+    [self animateCutoutToRect:markRect withShape:shape];
+    
     CGFloat lblContinueWidth = self.enableSkipButton ? (70.0/100.0) * self.bounds.size.width : self.bounds.size.width;
     CGFloat btnSkipWidth = self.bounds.size.width - lblContinueWidth;
     
@@ -274,7 +297,7 @@ static const BOOL kEnableSkipButton = YES;
     if ([self.delegate respondsToSelector:@selector(coachMarksViewWillCleanup:)]) {
         [self.delegate coachMarksViewWillCleanup:self];
     }
-
+    
     // Fade out self
     [UIView animateWithDuration:self.animationDuration
                      animations:^{
@@ -283,7 +306,7 @@ static const BOOL kEnableSkipButton = YES;
                      completion:^(BOOL finished) {
                          // Remove self
                          [self removeFromSuperview];
-
+                         
                          // Delegate (coachMarksViewDidCleanup:)
                          if ([self.delegate respondsToSelector:@selector(coachMarksViewDidCleanup:)]) {
                              [self.delegate coachMarksViewDidCleanup:self];
